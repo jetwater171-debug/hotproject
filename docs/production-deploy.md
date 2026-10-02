@@ -16,6 +16,7 @@ Configure as variáveis abaixo no ambiente da Vercel. Não coloque chaves privad
 | `ELEVENLABS_API_KEY` | Segredo somente no servidor; gera voz, conversão e efeitos. |
 | `ELEVENLABS_DEFAULT_VOICE_ID` | Opcional; voz inicial da conta. |
 | `APP_ORIGINS` | Origens HTTPS permitidas, separadas por vírgula, incluindo domínio próprio se existir. |
+| `NODEJS_HELPERS` | Obrigatório: `0` em produção e preview, preserva o stream nativo de JSON e multipart. |
 | `AUDIO_DAILY_LIMIT` | Opcional, inteiro; padrão 10 operações pagas por pessoa por dia UTC. |
 | `AUDIO_DAILY_UNITS` | Opcional, inteiro; padrão 15.000 unidades operacionais por pessoa por dia. |
 | `AUDIO_GLOBAL_DAILY_LIMIT` | Opcional, inteiro; padrão 50 operações pagas no projeto por dia. |
