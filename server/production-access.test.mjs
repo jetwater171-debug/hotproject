@@ -5,7 +5,7 @@ import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
 import { createAudioHandler } from './audio-handler.mjs';
-import { createVercelHandler } from '../api/[...path].mjs';
+import { createVercelHandler } from '../api/audio.mjs';
 import { digest } from './ambience-library.mjs';
 
 const HOST = 'velora.example';
@@ -135,9 +135,31 @@ test('single Vercel adapter preserves nested paths and streams a bundle larger t
   const bytes = Buffer.alloc(5 * 1024 * 1024); mp3.copy(bytes); await writeFile(join(publicDir, 'audio/rain.mp3'), bytes);
   await writeFile(manifest, JSON.stringify({ version: 1, beds: [{ environment: 'rain', id: 'rain_fixture', file: 'audio/rain.mp3', source: 'https://example.org/fixture', license: 'cc0', sha256: digest(bytes), label: 'Recorded fixture', reviewed: false }] }));
   const records = [], api = await local(t, { publicDir, bundleManifestPath: manifest, fetchImpl: mockProvider(records) }, createVercelHandler);
-  const response = await api.get('/api/audio/ambience/rain'); assert.equal(response.status, 200); assert.equal(response.headers.get('x-ambience-source'), 'recording'); assert.equal(response.headers.get('content-length'), null); assert.deepEqual(Buffer.from(await response.arrayBuffer()), bytes);
+  const response = await api.get('/api/audio?__audio_route=ambience%2Frain'); assert.equal(response.status, 200); assert.equal(response.headers.get('x-ambience-source'), 'recording'); assert.equal(response.headers.get('content-length'), null); assert.deepEqual(Buffer.from(await response.arrayBuffer()), bytes);
   assert.equal(records.length, 1); assert.ok(records[0].url.endsWith('/auth/v1/user'));
   const config = JSON.parse(await readFile(new URL('../vercel.json', import.meta.url), 'utf8')); assert.deepEqual(Object.keys(config.functions), ['api/*.mjs']); assert.equal(config.functions['api/*.mjs'].maxDuration, 150);
+  assert.deepEqual(config.rewrites[0], { source: '/api/audio/:path*', destination: '/api/audio?__audio_route=:path*' });
+});
+
+test('Vercel rewrite reaches public status, authenticated voices, JSON and multipart without losing query encoding', async t => {
+  const records = [], api = await local(t, { fetchImpl: mockProvider(records) }, createVercelHandler);
+  const status = await api.get('/api/audio?__audio_route=status', { Authorization: '' });
+  assert.equal(status.status, 200); assert.equal((await status.json()).authRequired, true);
+  await error(await api.get('/api/audio?__audio_route=voices', { Authorization: '' }), 401, 'auth_required');
+  const voices = await api.get('/api/audio?__audio_route=voices&search=Voz+%2B+pt&nextPageToken=token%2B%2F%3D&language=pt');
+  assert.equal(voices.status, 200);
+  const voiceRequest = new URL(records.find(record => record.url.includes('/v2/voices?')).url);
+  assert.equal(voiceRequest.searchParams.get('search'), 'Voz + pt');
+  assert.equal(voiceRequest.searchParams.get('next_page_token'), 'token+/=');
+  const speechResponse = await api.post('/api/audio?__audio_route=speech', speech);
+  assert.equal(speechResponse.status, 200); assert.deepEqual(Buffer.from(await speechResponse.arrayBuffer()), mp3);
+  const guideResponse = await api.post('/api/audio?__audio_route=voice-change', guide(wav()));
+  assert.equal(guideResponse.status, 200); assert.equal(guideResponse.headers.get('x-voice-model'), 'eleven_multilingual_sts_v2'); await guideResponse.arrayBuffer();
+  assert.equal((await api.get('/api/audio/status?__audio_route=voices', { Authorization: '' })).status, 200);
+  for (const path of ['../status', 'ambience//rain', 'ambience%2Frain', 'https://other.example']) {
+    await error(await api.get('/api/audio?__audio_route=' + encodeURIComponent(path)), 400, 'invalid_route');
+  }
+  await error(await api.get('/api/audio?__audio_route=status&__audio_route=voices'), 400, 'invalid_route');
 });
 
 test('migration grants only service RPC writes and contains transaction lock and ownership guards', async () => {

@@ -11,6 +11,7 @@
     }
   },
   "rewrites": [
+    { "source": "/api/audio/:path*", "destination": "/api/audio?__audio_route=:path*" },
     { "source": "/:path((?!api/|audio/|assets/).*)", "destination": "/index.html" }
   ]
 }

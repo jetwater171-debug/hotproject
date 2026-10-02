@@ -2,7 +2,7 @@
 
 ## Deploy
 
-`api/[...path].mjs` adapta o mesmo handler local para uma única função Node na Vercel. A função não inicia um listener e não carrega `.env` por arquivo. `vercel.json` executa o build Vite, publica `dist`, ativa Fluid Compute e inclui apenas o catálogo, o manifesto de gravações e `public/audio/` no bundle. As rotas `/api/audio/*` continuam iguais às usadas pelo frontend. O fallback da SPA não intercepta API, gravações estáticas ou arquivos do build.
+`api/audio.mjs` adapta o mesmo handler local para uma única função Node na Vercel. A função não inicia um listener e não carrega `.env` por arquivo. `vercel.json` executa o build Vite, publica `dist`, ativa Fluid Compute e inclui apenas o catálogo, o manifesto de gravações e `public/audio/` no bundle. As rotas `/api/audio/*` continuam iguais às usadas pelo frontend. O fallback da SPA não intercepta API, gravações estáticas ou arquivos do build.
 
 Aplique `supabase/migrations/202610010001_audio_access.sql` no projeto correto antes de ativar chamadas pagas. Ela cria perfis com RLS, registros mínimos de consumo e duas RPCs restritas ao papel `service_role`. Uma migração ausente ou configuração inválida faz a geração falhar antes da ElevenLabs; não há fallback que ignore cotas.
 
