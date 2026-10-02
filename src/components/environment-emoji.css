@@ -1,0 +1,3 @@
+.environment-emoji { display: inline-block; vertical-align: middle; flex-shrink: 0; overflow: visible; filter: drop-shadow(0 2px 2px #00000024); }
+.environment-emoji .ee-highlight { fill: none; stroke: #ffffff; stroke-width: 1.15; stroke-opacity: .2; }
+@media (forced-colors: active) { .environment-emoji { filter: none; } .environment-emoji path, .environment-emoji rect, .environment-emoji circle, .environment-emoji ellipse { stroke: CanvasText; } }

@@ -1,0 +1,33 @@
+{
+  "name": "velora-studio",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "scripts": {
+    "dev": "node scripts/dev.mjs",
+    "dev:api": "node server/index.mjs",
+    "dev:web": "vite --host 127.0.0.1 --port 5173 --strictPort",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview --host 127.0.0.1 --port 4173 --strictPort",
+    "start": "node server/index.mjs",
+    "test": "node --test server/*.test.mjs src/audio/*.test.mjs src/auth/*.test.mjs shared/*.test.mjs scripts/*.test.mjs",
+    "audio:prepare": "node scripts/prepare-ambiences.mjs",
+    "audio:library": "node scripts/audio-library.mjs",
+    "check": "tsc -b"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.117.2",
+    "gsap": "^3.13.0",
+    "lucide-react": "^0.468.0",
+    "motion": "^12.23.0",
+    "react": "^19.1.0",
+    "react-dom": "^19.1.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.1.0",
+    "@types/react-dom": "^19.1.0",
+    "@vitejs/plugin-react": "^4.5.0",
+    "typescript": "~5.8.3",
+    "vite": "^6.3.5"
+  }
+}

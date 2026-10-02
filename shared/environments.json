@@ -1,0 +1,1611 @@
+[
+  {
+    "id": "studio",
+    "name": "Estúdio",
+    "category": "indoor",
+    "popular": true,
+    "prompt": "",
+    "acoustic": {
+      "reverb": 0,
+      "decay": 0.12,
+      "predelay": 0,
+      "lowpass": 20000,
+      "highpass": 45,
+      "kind": "dry",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "quiet",
+    "sound": {
+      "version": 2,
+      "mode": "silent",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Voz seca e próxima",
+        "Sem cama sonora nem cauda de sala"
+      ],
+      "backgroundDb": -60,
+      "crossfadeSeconds": 0,
+      "stereoWidth": 0,
+      "defaultVolume": 0
+    }
+  },
+  {
+    "id": "bathroom",
+    "name": "Banheiro",
+    "category": "indoor",
+    "popular": true,
+    "prompt": "",
+    "acoustic": {
+      "reverb": 0.18,
+      "decay": 0.8,
+      "predelay": 0.006,
+      "lowpass": 18000,
+      "highpass": 65,
+      "kind": "small-hard",
+      "distanceWet": 0.12,
+      "earlyReflections": [
+        {
+          "delayMs": 8,
+          "gain": 0.12,
+          "pan": -0.24
+        },
+        {
+          "delayMs": 19,
+          "gain": 0.08,
+          "pan": 0.22
+        },
+        {
+          "delayMs": 34,
+          "gain": 0.045,
+          "pan": -0.1
+        }
+      ]
+    },
+    "synth": "hum",
+    "sound": {
+      "version": 2,
+      "mode": "silent",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Reflexões próximas de azulejos",
+        "Cauda curta de banheiro vazio",
+        "Sem água ou ventilação adicionada"
+      ],
+      "backgroundDb": -60,
+      "crossfadeSeconds": 0,
+      "stereoWidth": 0,
+      "defaultVolume": 0
+    }
+  },
+  {
+    "id": "bedroom",
+    "name": "Quarto",
+    "category": "indoor",
+    "popular": false,
+    "prompt": "",
+    "acoustic": {
+      "reverb": 0.05,
+      "decay": 0.3,
+      "predelay": 0.006,
+      "lowpass": 19500,
+      "highpass": 55,
+      "kind": "furnished",
+      "distanceWet": 0.035,
+      "earlyReflections": [
+        {
+          "delayMs": 11,
+          "gain": 0.035,
+          "pan": -0.18
+        },
+        {
+          "delayMs": 26,
+          "gain": 0.018,
+          "pan": 0.16
+        }
+      ]
+    },
+    "synth": "quiet",
+    "sound": {
+      "version": 2,
+      "mode": "silent",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Reflexões amortecidas por tecidos",
+        "Quarto silencioso sem ventilador adicionado"
+      ],
+      "backgroundDb": -60,
+      "crossfadeSeconds": 0,
+      "stereoWidth": 0,
+      "defaultVolume": 0
+    }
+  },
+  {
+    "id": "livingroom",
+    "name": "Sala",
+    "category": "indoor",
+    "popular": false,
+    "prompt": "",
+    "acoustic": {
+      "reverb": 0.07,
+      "decay": 0.45,
+      "predelay": 0.01,
+      "lowpass": 18500,
+      "highpass": 60,
+      "kind": "furnished",
+      "distanceWet": 0.05,
+      "earlyReflections": [
+        {
+          "delayMs": 14,
+          "gain": 0.05,
+          "pan": -0.22
+        },
+        {
+          "delayMs": 31,
+          "gain": 0.025,
+          "pan": 0.2
+        }
+      ]
+    },
+    "synth": "hum",
+    "sound": {
+      "version": 2,
+      "mode": "silent",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Sala mobiliada de cauda suave",
+        "Sem televisão ou ruído doméstico adicionado"
+      ],
+      "backgroundDb": -60,
+      "crossfadeSeconds": 0,
+      "stereoWidth": 0,
+      "defaultVolume": 0
+    }
+  },
+  {
+    "id": "kitchen",
+    "name": "Cozinha",
+    "category": "indoor",
+    "popular": false,
+    "prompt": "Interior field recording from a fixed position beside a kitchen table, several metres from a running refrigerator. A quiet refrigerator compressor forms the continuous bed, with very soft irregular ceramic dish contacts and a few distant drawer movements. Natural hard-surface depth; no running tap, frying or repeated utensil rhythm. Keep incidental sounds quiet with no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.13,
+      "decay": 0.65,
+      "predelay": 0.008,
+      "lowpass": 18500,
+      "highpass": 70,
+      "kind": "small-hard",
+      "distanceWet": 0.08,
+      "earlyReflections": [
+        {
+          "delayMs": 9,
+          "gain": 0.085,
+          "pan": -0.22
+        },
+        {
+          "delayMs": 23,
+          "gain": 0.045,
+          "pan": 0.24
+        },
+        {
+          "delayMs": 39,
+          "gain": 0.025,
+          "pan": -0.12
+        }
+      ]
+    },
+    "synth": "hum",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Compressor baixo da geladeira",
+        "Contato ocasional de louça",
+        "Gavetas distantes"
+      ],
+      "backgroundDb": -32,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.4,
+      "defaultVolume": 18
+    }
+  },
+  {
+    "id": "office",
+    "name": "Escritório",
+    "category": "indoor",
+    "popular": false,
+    "prompt": "Interior field recording from a seated desk in a small furnished office. Soft building air conditioning remains in the distance, with sparse light keyboard taps from another desk and an occasional quiet chair adjustment. All sources remain several metres away with subdued room reflections, no printer cycle or electronic alerts. Irregular incidental sounds, no rhythmic repetition or abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.06,
+      "decay": 0.4,
+      "predelay": 0.01,
+      "lowpass": 18500,
+      "highpass": 70,
+      "kind": "furnished",
+      "distanceWet": 0.04,
+      "earlyReflections": [
+        {
+          "delayMs": 13,
+          "gain": 0.035,
+          "pan": -0.2
+        },
+        {
+          "delayMs": 29,
+          "gain": 0.022,
+          "pan": 0.15
+        }
+      ]
+    },
+    "synth": "hum",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Ar-condicionado distante",
+        "Teclado esparso de outra mesa",
+        "Ajuste discreto de cadeira"
+      ],
+      "backgroundDb": -34,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.35,
+      "defaultVolume": 16
+    }
+  },
+  {
+    "id": "library",
+    "name": "Biblioteca",
+    "category": "indoor",
+    "popular": false,
+    "prompt": "",
+    "acoustic": {
+      "reverb": 0.08,
+      "decay": 0.75,
+      "predelay": 0.02,
+      "lowpass": 17500,
+      "highpass": 65,
+      "kind": "large",
+      "distanceWet": 0.065,
+      "earlyReflections": [
+        {
+          "delayMs": 20,
+          "gain": 0.035,
+          "pan": -0.28
+        },
+        {
+          "delayMs": 43,
+          "gain": 0.023,
+          "pan": 0.24
+        },
+        {
+          "delayMs": 66,
+          "gain": 0.012,
+          "pan": -0.1
+        }
+      ]
+    },
+    "synth": "quiet",
+    "sound": {
+      "version": 2,
+      "mode": "silent",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Profundidade de sala com estantes",
+        "Reflexões difusas e amortecidas",
+        "Sem páginas ou passos adicionados"
+      ],
+      "backgroundDb": -60,
+      "crossfadeSeconds": 0,
+      "stereoWidth": 0,
+      "defaultVolume": 0
+    }
+  },
+  {
+    "id": "elevator",
+    "name": "Elevador",
+    "category": "indoor",
+    "popular": false,
+    "prompt": "Interior field recording at standing ear height inside a moving passenger elevator. Low lift-drive vibration transfers gently into the metal cabin, with soft ventilation and a faint panel rattle. A consistent enclosed perspective throughout the clip, without stops, door cycles, bells or announcements. Mechanical changes stay subtle and irregular; no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.12,
+      "decay": 0.5,
+      "predelay": 0.005,
+      "lowpass": 16500,
+      "highpass": 65,
+      "kind": "small-hard",
+      "distanceWet": 0.08,
+      "earlyReflections": [
+        {
+          "delayMs": 6,
+          "gain": 0.09,
+          "pan": -0.2
+        },
+        {
+          "delayMs": 14,
+          "gain": 0.05,
+          "pan": 0.2
+        },
+        {
+          "delayMs": 27,
+          "gain": 0.025,
+          "pan": -0.12
+        }
+      ]
+    },
+    "synth": "hum",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Vibração do motor do elevador",
+        "Ventilação de cabine metálica",
+        "Painel vibrando discretamente"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.25,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "garage",
+    "name": "Garagem",
+    "category": "indoor",
+    "popular": false,
+    "prompt": "Interior field recording from a fixed standing position in a spacious underground concrete parking garage. Distant exhaust ventilation and subdued building machinery form a low continuous bed, with diffuse concrete reflections and a faint faraway structural rattle. No vehicle starts, horns, doors or nearby footsteps. Preserve distant depth and quiet irregular detail without abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.17,
+      "decay": 1.3,
+      "predelay": 0.022,
+      "lowpass": 16500,
+      "highpass": 70,
+      "kind": "large",
+      "distanceWet": 0.12,
+      "earlyReflections": [
+        {
+          "delayMs": 22,
+          "gain": 0.065,
+          "pan": -0.3
+        },
+        {
+          "delayMs": 46,
+          "gain": 0.04,
+          "pan": 0.32
+        },
+        {
+          "delayMs": 73,
+          "gain": 0.022,
+          "pan": -0.15
+        }
+      ]
+    },
+    "synth": "hum",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Exaustão distante da garagem",
+        "Máquinas do prédio ao fundo",
+        "Reflexões difusas de concreto"
+      ],
+      "backgroundDb": -32,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.5,
+      "defaultVolume": 18
+    }
+  },
+  {
+    "id": "rain",
+    "name": "Chuva",
+    "category": "nature",
+    "popular": true,
+    "prompt": "Outdoor field recording from a sheltered open porch during steady moderate rain. Raindrops land on nearby foliage and wet pavement a few metres beyond the shelter, with a soft runoff trickle below. Open-air perspective with no indoor resonance, metal roof pounding or thunder. Natural irregular droplet detail, even overall rainfall level and no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.01,
+      "decay": 0.18,
+      "predelay": 0,
+      "lowpass": 19500,
+      "highpass": 60,
+      "kind": "open",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "rain",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Chuva em folhas próximas",
+        "Gotas no piso molhado",
+        "Escoamento leve sob a varanda"
+      ],
+      "backgroundDb": -27,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.5,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "storm",
+    "name": "Tempestade",
+    "category": "nature",
+    "popular": false,
+    "prompt": "Outdoor field recording from a sheltered porch during a rainstorm. Dense rain falls on foliage and pavement beyond the shelter, with low wind gusts and occasional very distant rolling thunder. Thunder remains soft, diffuse and separated by long irregular quiet gaps; no close cracks, metal roof pounding or sudden loud peaks. Keep one fixed open-air perspective and organically varying rain. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.015,
+      "decay": 0.22,
+      "predelay": 0,
+      "lowpass": 18500,
+      "highpass": 50,
+      "kind": "open",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "storm",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.69,
+      "signature": [
+        "Chuva densa além do abrigo",
+        "Rajadas baixas de vento",
+        "Trovão suave muito distante"
+      ],
+      "backgroundDb": -28,
+      "crossfadeSeconds": 1.8,
+      "stereoWidth": 0.55,
+      "defaultVolume": 18
+    }
+  },
+  {
+    "id": "forest",
+    "name": "Floresta",
+    "category": "nature",
+    "popular": false,
+    "prompt": "Outdoor field recording from a stationary position on a quiet woodland path. A light breeze moves nearby leaves, with sparse distant bird calls at changing depths and faint canopy rustle. No footsteps, close wing flaps or repetitive bird chorus. Open woodland perspective, naturally irregular calls with long gaps and no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.015,
+      "decay": 0.22,
+      "predelay": 0,
+      "lowpass": 20000,
+      "highpass": 55,
+      "kind": "open",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "forest",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.68,
+      "signature": [
+        "Folhas movidas pela brisa",
+        "Aves esparsas em diferentes distâncias",
+        "Copas suaves ao fundo"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.6,
+      "defaultVolume": 18
+    }
+  },
+  {
+    "id": "beach",
+    "name": "Praia",
+    "category": "nature",
+    "popular": false,
+    "prompt": "Outdoor field recording at standing ear height on a quiet sandy beach, several metres back from the waterline. Small ocean swells wash gently onto sand and recede in foamy grains, under a faint sea breeze. Vary wave spacing and strength naturally without a fixed cycle; no close birds, crowds or crashing surf. Keep soft open-air depth and smooth levels with no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0,
+      "decay": 0.15,
+      "predelay": 0,
+      "lowpass": 19500,
+      "highpass": 60,
+      "kind": "open",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "waves",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Ondas pequenas chegando à areia",
+        "Espuma recuando pela margem",
+        "Brisa costeira leve"
+      ],
+      "backgroundDb": -28,
+      "crossfadeSeconds": 2,
+      "stereoWidth": 0.6,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "river",
+    "name": "Rio",
+    "category": "nature",
+    "popular": false,
+    "prompt": "Outdoor field recording from a quiet riverbank a few metres beside a shallow flowing stream. Continuous small water ripples pass over smooth stones, with soft bubbles between rocks and faint bankside leaves. One stable open-air perspective, no waterfall, ocean surf or large splashes. Subtle irregular water textures with no repeated event pattern or abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.005,
+      "decay": 0.16,
+      "predelay": 0,
+      "lowpass": 19500,
+      "highpass": 60,
+      "kind": "open",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "river",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Água contínua entre pedras",
+        "Bolhas suaves no curso do rio",
+        "Folhas discretas na margem"
+      ],
+      "backgroundDb": -29,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.5,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "fireplace",
+    "name": "Lareira",
+    "category": "nature",
+    "popular": false,
+    "prompt": "Interior field recording from a chair two metres from a small wood fireplace in a furnished living room. Soft flame movement and glowing embers form a warm continuous bed, with occasional tiny wood crackles. Sparse irregular crackles stay low and never become sharp pops; no large log shifts, tools or fan. Keep the same room perspective and gentle dynamics throughout. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.07,
+      "decay": 0.45,
+      "predelay": 0.01,
+      "lowpass": 18500,
+      "highpass": 60,
+      "kind": "furnished",
+      "distanceWet": 0.05,
+      "earlyReflections": [
+        {
+          "delayMs": 15,
+          "gain": 0.045,
+          "pan": -0.22
+        },
+        {
+          "delayMs": 33,
+          "gain": 0.025,
+          "pan": 0.2
+        }
+      ]
+    },
+    "synth": "fire",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.72,
+      "signature": [
+        "Chama suave da lareira",
+        "Brasas em combustão baixa",
+        "Pequenos estalos de madeira"
+      ],
+      "backgroundDb": -31,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.35,
+      "defaultVolume": 18
+    }
+  },
+  {
+    "id": "night",
+    "name": "Noite",
+    "category": "nature",
+    "popular": false,
+    "prompt": "Outdoor field recording from a stationary position in a quiet rural garden at night. Sparse distant crickets are separated by calm stretches, with very light air through foliage and low natural background hush. No loud insect chorus, close animals, dogs or owl calls. Preserve open-air distance, softly varied timing and no rhythmic repetition or abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.005,
+      "decay": 0.16,
+      "predelay": 0,
+      "lowpass": 19500,
+      "highpass": 50,
+      "kind": "open",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "night",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.68,
+      "signature": [
+        "Grilos esparsos ao longe",
+        "Ar suave entre a folhagem",
+        "Pausas tranquilas da noite"
+      ],
+      "backgroundDb": -33,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.55,
+      "defaultVolume": 16
+    }
+  },
+  {
+    "id": "wind",
+    "name": "Vento",
+    "category": "nature",
+    "popular": false,
+    "prompt": "Outdoor field recording at a stationary sheltered microphone beside low bushes on an open field. A mild breeze rises and falls through nearby foliage, with soft airy movement across the open landscape. No rain, traffic or bird calls, and no direct microphone buffeting, clipping or harsh low rumble. Gently irregular gust lengths with smooth transitions and no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0,
+      "decay": 0.12,
+      "predelay": 0,
+      "lowpass": 19500,
+      "highpass": 70,
+      "kind": "open",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "wind",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.68,
+      "signature": [
+        "Brisa atravessando arbustos",
+        "Movimento de ar em campo aberto",
+        "Rajadas suaves de duração variável"
+      ],
+      "backgroundDb": -31,
+      "crossfadeSeconds": 1.8,
+      "stereoWidth": 0.55,
+      "defaultVolume": 18
+    }
+  },
+  {
+    "id": "street",
+    "name": "Rua",
+    "category": "city",
+    "popular": true,
+    "prompt": "Outdoor field recording from a fixed pedestrian position on the pavement of a moderately busy city street. Distant engine traffic, soft tires passing along the road and occasional faraway footsteps create a layered open-air bed. Vehicle passes vary naturally in spacing and stay at a distance; no horns, sirens, braking squeals or close conversation. Consistent perspective with no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.02,
+      "decay": 0.2,
+      "predelay": 0,
+      "lowpass": 19000,
+      "highpass": 70,
+      "kind": "open",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "traffic",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Pneus passando no asfalto",
+        "Motores distantes da rua",
+        "Passos ocasionais na calçada"
+      ],
+      "backgroundDb": -28,
+      "crossfadeSeconds": 1.8,
+      "stereoWidth": 0.55,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "cafe",
+    "name": "Café",
+    "category": "city",
+    "popular": true,
+    "prompt": "Interior field recording from a seated table in a small coffee shop, away from the service counter. A low wordless crowd murmur sits behind delicate cup-and-saucer contacts and occasional distant espresso steam. All sources remain several metres away in a softly furnished room. Small irregular service sounds, no sustained machine blasts or abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.09,
+      "decay": 0.6,
+      "predelay": 0.012,
+      "lowpass": 18000,
+      "highpass": 75,
+      "kind": "furnished",
+      "distanceWet": 0.065,
+      "earlyReflections": [
+        {
+          "delayMs": 14,
+          "gain": 0.045,
+          "pan": -0.28
+        },
+        {
+          "delayMs": 32,
+          "gain": 0.026,
+          "pan": 0.25
+        }
+      ]
+    },
+    "synth": "cafe",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Xícaras e pires na cafeteria",
+        "Vapor distante da máquina de espresso",
+        "Murmúrio sem palavras ao fundo"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.45,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "restaurant",
+    "name": "Restaurante",
+    "category": "city",
+    "popular": false,
+    "prompt": "Interior field recording from a seated table in a furnished restaurant dining room. Distant wordless table murmur blends with light cutlery touching plates and quiet serving-dish movement a few tables away. Stable dining-room perspective without coffee-machine steam, kitchen cooking or close diners. Incidental contacts remain soft and irregular, with no repeated rhythm or abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.11,
+      "decay": 0.75,
+      "predelay": 0.016,
+      "lowpass": 18000,
+      "highpass": 75,
+      "kind": "furnished",
+      "distanceWet": 0.075,
+      "earlyReflections": [
+        {
+          "delayMs": 17,
+          "gain": 0.05,
+          "pan": -0.26
+        },
+        {
+          "delayMs": 37,
+          "gain": 0.03,
+          "pan": 0.24
+        },
+        {
+          "delayMs": 58,
+          "gain": 0.015,
+          "pan": -0.1
+        }
+      ]
+    },
+    "synth": "cafe",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Talheres tocando pratos",
+        "Serviço de louça entre mesas",
+        "Murmúrio distante de salão"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.45,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "bar",
+    "name": "Bar",
+    "category": "city",
+    "popular": false,
+    "prompt": "Interior field recording from a fixed seated position near the end of a small bar counter. Quiet ice moving in glasses, occasional soft glass contacts and short distant liquid pours sit beneath low wordless social murmur. All preparation sounds stay a few metres away; no espresso machine, bottle crashes or sound system. Irregular gentle events and no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.12,
+      "decay": 0.7,
+      "predelay": 0.012,
+      "lowpass": 17500,
+      "highpass": 75,
+      "kind": "furnished",
+      "distanceWet": 0.08,
+      "earlyReflections": [
+        {
+          "delayMs": 12,
+          "gain": 0.055,
+          "pan": -0.2
+        },
+        {
+          "delayMs": 28,
+          "gain": 0.03,
+          "pan": 0.26
+        },
+        {
+          "delayMs": 48,
+          "gain": 0.015,
+          "pan": -0.15
+        }
+      ]
+    },
+    "synth": "cafe",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Gelo movendo-se em copos",
+        "Bebidas servidas no balcão",
+        "Contato suave entre vidros",
+        "Murmúrio social distante"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.4,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "party",
+    "name": "Festa",
+    "category": "city",
+    "popular": false,
+    "prompt": "Interior field recording from the quieter edge of a furnished room during a social gathering. A layered wordless crowd murmur and soft clothing movement form the bed, with rare faint distant laughter and gentle glass contacts. Keep every person indistinct and well away from the microphone; no cheers, shouting or sound system. Naturally varying soft activity with no abrupt peaks or rhythmic repetition. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.1,
+      "decay": 0.65,
+      "predelay": 0.012,
+      "lowpass": 18000,
+      "highpass": 80,
+      "kind": "furnished",
+      "distanceWet": 0.07,
+      "earlyReflections": [
+        {
+          "delayMs": 14,
+          "gain": 0.045,
+          "pan": -0.28
+        },
+        {
+          "delayMs": 32,
+          "gain": 0.026,
+          "pan": 0.26
+        },
+        {
+          "delayMs": 52,
+          "gain": 0.015,
+          "pan": -0.12
+        }
+      ]
+    },
+    "synth": "party",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.68,
+      "signature": [
+        "Grupo em murmúrio sem palavras",
+        "Movimento de roupas e pessoas",
+        "Risos discretos muito distantes",
+        "Copos ocasionais"
+      ],
+      "backgroundDb": -29,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.55,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "mall",
+    "name": "Shopping",
+    "category": "city",
+    "popular": false,
+    "prompt": "Interior field recording from a fixed standing position beside the walkway of a spacious shopping mall atrium. Distant foot traffic, quiet escalator machinery and subtle shopping-bag rustles form a diffuse bed with large-room depth. A very low wordless crowd murmur remains far away. No announcements, store sound systems or close footsteps. Irregular gentle activity with no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.16,
+      "decay": 1.45,
+      "predelay": 0.023,
+      "lowpass": 17500,
+      "highpass": 75,
+      "kind": "large",
+      "distanceWet": 0.11,
+      "earlyReflections": [
+        {
+          "delayMs": 24,
+          "gain": 0.05,
+          "pan": -0.32
+        },
+        {
+          "delayMs": 49,
+          "gain": 0.03,
+          "pan": 0.3
+        },
+        {
+          "delayMs": 75,
+          "gain": 0.017,
+          "pan": -0.14
+        }
+      ]
+    },
+    "synth": "cafe",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Máquinas suaves da escada rolante",
+        "Passos difusos no átrio",
+        "Sacolas discretas ao fundo"
+      ],
+      "backgroundDb": -31,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.55,
+      "defaultVolume": 18
+    }
+  },
+  {
+    "id": "supermarket",
+    "name": "Mercado",
+    "category": "city",
+    "popular": false,
+    "prompt": "Interior field recording from a stationary position midway along a supermarket aisle. Low refrigeration units form a continuous bed, with occasional quiet trolley wheels on smooth flooring and very rare faint scanner beeps from distant checkouts. Maintain one aisle perspective, no announcements or nearby conversation. Irregular faraway detail with no frequent beeps or abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.11,
+      "decay": 0.8,
+      "predelay": 0.016,
+      "lowpass": 18000,
+      "highpass": 75,
+      "kind": "large",
+      "distanceWet": 0.075,
+      "earlyReflections": [
+        {
+          "delayMs": 17,
+          "gain": 0.045,
+          "pan": -0.25
+        },
+        {
+          "delayMs": 36,
+          "gain": 0.026,
+          "pan": 0.24
+        },
+        {
+          "delayMs": 59,
+          "gain": 0.014,
+          "pan": -0.1
+        }
+      ]
+    },
+    "synth": "hum",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Refrigeração dos corredores",
+        "Rodas de carrinho no piso",
+        "Leitor de caixa raro e distante"
+      ],
+      "backgroundDb": -31,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.45,
+      "defaultVolume": 18
+    }
+  },
+  {
+    "id": "gym",
+    "name": "Academia",
+    "category": "city",
+    "popular": false,
+    "prompt": "Interior field recording from a fixed standing position in a gym, several metres away from equipment. Soft treadmill motors and room ventilation form a low bed, with rare distant padded weight contacts and subtle cable-machine movement. No close impacts, grunts or sound system. Keep mechanical activity restrained and irregular, without a repeated workout rhythm or abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.12,
+      "decay": 0.9,
+      "predelay": 0.018,
+      "lowpass": 18000,
+      "highpass": 80,
+      "kind": "large",
+      "distanceWet": 0.08,
+      "earlyReflections": [
+        {
+          "delayMs": 18,
+          "gain": 0.047,
+          "pan": -0.28
+        },
+        {
+          "delayMs": 40,
+          "gain": 0.028,
+          "pan": 0.26
+        },
+        {
+          "delayMs": 63,
+          "gain": 0.015,
+          "pan": -0.13
+        }
+      ]
+    },
+    "synth": "hum",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Motores baixos de esteiras",
+        "Pesos apoiados ao longe",
+        "Cabos de equipamentos discretos"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.45,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "car",
+    "name": "Carro",
+    "category": "transport",
+    "popular": true,
+    "prompt": "Interior field recording from the front passenger seat of a closed car travelling smoothly at a steady moderate speed on dry even asphalt. Muted tire friction and a low engine bed mix with soft dashboard airflow. Consistent enclosed cabin perspective, without acceleration, gear shifts, indicators, horns or open windows. Gentle irregular road texture with no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.025,
+      "decay": 0.22,
+      "predelay": 0.002,
+      "lowpass": 17500,
+      "highpass": 45,
+      "kind": "vehicle",
+      "distanceWet": 0.025,
+      "earlyReflections": [
+        {
+          "delayMs": 4,
+          "gain": 0.032,
+          "pan": -0.15
+        },
+        {
+          "delayMs": 10,
+          "gain": 0.018,
+          "pan": 0.16
+        }
+      ]
+    },
+    "synth": "engine",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Pneus suaves no asfalto",
+        "Motor abafado dentro do carro",
+        "Ar discreto do painel"
+      ],
+      "backgroundDb": -28,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.25,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "bus",
+    "name": "Ônibus",
+    "category": "transport",
+    "popular": false,
+    "prompt": "Interior field recording from a seated mid-cabin position in a city bus moving steadily on a smooth dry road. Distant low diesel-engine vibration, soft road friction and occasional restrained chassis-panel rattles form the bed. The larger passenger cabin remains consistent; no stops, brakes, door cycles, horns or announcements. Rattles vary subtly and irregularly with no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.045,
+      "decay": 0.4,
+      "predelay": 0.006,
+      "lowpass": 17500,
+      "highpass": 50,
+      "kind": "vehicle",
+      "distanceWet": 0.04,
+      "earlyReflections": [
+        {
+          "delayMs": 8,
+          "gain": 0.04,
+          "pan": -0.24
+        },
+        {
+          "delayMs": 20,
+          "gain": 0.025,
+          "pan": 0.24
+        },
+        {
+          "delayMs": 35,
+          "gain": 0.012,
+          "pan": -0.1
+        }
+      ]
+    },
+    "synth": "engine",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Motor diesel no fundo do ônibus",
+        "Painéis do chassi vibrando",
+        "Ruído de rodagem da cabine ampla"
+      ],
+      "backgroundDb": -28,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.35,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "subway",
+    "name": "Metrô",
+    "category": "transport",
+    "popular": false,
+    "prompt": "Interior field recording from a seated position inside a moving electric subway carriage in a tunnel. A subdued electric traction tone layers over continuous smooth rail rumble, with diffuse tunnel air and rare soft metallic carriage vibration. No regular rail-joint clacking, squeals, stops, door alarms or announcements. Maintain cabin distance, gently varying motor texture and no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.065,
+      "decay": 0.5,
+      "predelay": 0.008,
+      "lowpass": 17500,
+      "highpass": 55,
+      "kind": "vehicle",
+      "distanceWet": 0.05,
+      "earlyReflections": [
+        {
+          "delayMs": 9,
+          "gain": 0.05,
+          "pan": -0.24
+        },
+        {
+          "delayMs": 23,
+          "gain": 0.03,
+          "pan": 0.27
+        },
+        {
+          "delayMs": 41,
+          "gain": 0.016,
+          "pan": -0.13
+        }
+      ]
+    },
+    "synth": "rail",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.72,
+      "signature": [
+        "Tração elétrica do metrô",
+        "Trilhos contínuos sem batida marcada",
+        "Ar difuso do túnel",
+        "Vibração leve do vagão"
+      ],
+      "backgroundDb": -29,
+      "crossfadeSeconds": 1.8,
+      "stereoWidth": 0.4,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "train",
+    "name": "Trem",
+    "category": "transport",
+    "popular": false,
+    "prompt": "Interior field recording from a seated position in a conventional passenger train moving through open countryside. Soft wheel contacts at occasional rail joints blend with low rolling chassis vibration and carriage ventilation. Gentle joint spacing and level vary with the track, never becoming a rigid repeated beat. No electric subway tone, tunnel resonance, whistles or announcements. Keep a steady cabin perspective and no abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.05,
+      "decay": 0.45,
+      "predelay": 0.007,
+      "lowpass": 18000,
+      "highpass": 50,
+      "kind": "vehicle",
+      "distanceWet": 0.04,
+      "earlyReflections": [
+        {
+          "delayMs": 10,
+          "gain": 0.04,
+          "pan": -0.24
+        },
+        {
+          "delayMs": 26,
+          "gain": 0.025,
+          "pan": 0.25
+        },
+        {
+          "delayMs": 44,
+          "gain": 0.013,
+          "pan": -0.12
+        }
+      ]
+    },
+    "synth": "rail",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.72,
+      "signature": [
+        "Rodas em juntas espaçadas dos trilhos",
+        "Rolagem grave do trem convencional",
+        "Ventilação do vagão em campo aberto"
+      ],
+      "backgroundDb": -29,
+      "crossfadeSeconds": 1.8,
+      "stereoWidth": 0.4,
+      "defaultVolume": 20
+    }
+  },
+  {
+    "id": "airplane",
+    "name": "Avião",
+    "category": "transport",
+    "popular": false,
+    "prompt": "Interior field recording from a seated mid-cabin position in a passenger aircraft during stable cruise. A smooth low jet-engine drone and broad soft overhead air ventilation fill the enclosed cabin, with faint fuselage vibration. Constant cruise perspective without takeoff, acceleration, seat-belt chimes, announcements or trolley service. Subtle natural texture only, no pulsing cycles or abrupt peaks. No music, no intelligible speech, no foreground voice.",
+    "acoustic": {
+      "reverb": 0.035,
+      "decay": 0.3,
+      "predelay": 0.003,
+      "lowpass": 17000,
+      "highpass": 40,
+      "kind": "vehicle",
+      "distanceWet": 0.03,
+      "earlyReflections": [
+        {
+          "delayMs": 5,
+          "gain": 0.025,
+          "pan": -0.18
+        },
+        {
+          "delayMs": 13,
+          "gain": 0.014,
+          "pan": 0.18
+        }
+      ]
+    },
+    "synth": "flight",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 24,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Grave contínuo dos motores em cruzeiro",
+        "Ventilação acima dos assentos",
+        "Vibração discreta da fuselagem"
+      ],
+      "backgroundDb": -29,
+      "crossfadeSeconds": 1.4,
+      "stereoWidth": 0.3,
+      "defaultVolume": 18
+    }
+  },
+  {
+    "id": "shower",
+    "name": "Chuveiro",
+    "category": "indoor",
+    "popular": false,
+    "prompt": "Interior field recording from a fixed position beside a running domestic shower, outside the water spray. Continuous small water streams hitting a tiled shower floor with soft splashes and drain flow, enclosed close tile reflections. Keep the shower running steadily, with no faucet clicks, toilet flush, bathtub filling or outdoor rain. No music, no intelligible speech, no foreground voice. Natural unobtrusive dynamics with no abrupt peaks. Record the room rather than water hitting the microphone.",
+    "acoustic": {
+      "reverb": 0.18,
+      "decay": 0.8,
+      "predelay": 0.006,
+      "lowpass": 18000,
+      "highpass": 65,
+      "kind": "small-hard",
+      "distanceWet": 0.12,
+      "earlyReflections": [
+        {
+          "delayMs": 8,
+          "gain": 0.12,
+          "pan": -0.24
+        },
+        {
+          "delayMs": 19,
+          "gain": 0.08,
+          "pan": 0.22
+        },
+        {
+          "delayMs": 34,
+          "gain": 0.045,
+          "pan": -0.1
+        }
+      ]
+    },
+    "synth": "hum",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Água contínua caindo no piso",
+        "Respingos próximos em azulejo",
+        "Reflexos curtos do banheiro"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.45,
+      "defaultVolume": 18
+    },
+    "variantOf": "bathroom",
+    "icon": "shower",
+    "description": "Água correndo em um banheiro de azulejo."
+  },
+  {
+    "id": "rain-window",
+    "name": "Chuva na janela",
+    "category": "indoor",
+    "popular": false,
+    "prompt": "Interior field recording from a fixed listening position inside a quiet furnished bedroom beside a closed window during steady rain. Soft irregular droplets touching window glass, a gently filtered layer of rain outside and occasional weak trickles down the pane. Window stays closed. No open-air wind, no thunder, no traffic, no water splashing indoors. No music, no intelligible speech, no foreground voice. Natural unobtrusive dynamics with no abrupt peaks. Leave clear space for a close conversational voice.",
+    "acoustic": {
+      "reverb": 0.05,
+      "decay": 0.3,
+      "predelay": 0.006,
+      "lowpass": 19500,
+      "highpass": 55,
+      "kind": "furnished",
+      "distanceWet": 0.035,
+      "earlyReflections": [
+        {
+          "delayMs": 11,
+          "gain": 0.035,
+          "pan": -0.18
+        },
+        {
+          "delayMs": 26,
+          "gain": 0.018,
+          "pan": 0.16
+        }
+      ]
+    },
+    "synth": "quiet",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Gotas irregulares no vidro",
+        "Chuva abafada além da janela",
+        "Perspectiva protegida dentro do quarto"
+      ],
+      "backgroundDb": -32,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.45,
+      "defaultVolume": 18
+    },
+    "variantOf": "bedroom",
+    "icon": "rain-window",
+    "description": "Gotas no vidro, ouvidas de dentro do quarto."
+  },
+  {
+    "id": "rain-roof",
+    "name": "Chuva na cobertura",
+    "category": "nature",
+    "popular": false,
+    "prompt": "Outdoor field recording from a fixed position safely under a simple covered porch during steady rain. Soft irregular drops hitting the roof overhead and diffuse rain beyond the shelter, small runoff sounds at a distance. Keep the microphone protected and stationary. No wind buffeting, no thunder, no room-like reverb, no tin-roof ringing that dominates. No music, no intelligible speech, no foreground voice. Natural unobtrusive dynamics with no abrupt peaks. The roof and distant rain should remain distinct.",
+    "acoustic": {
+      "kind": "reflective-outdoor",
+      "reverb": 0.09,
+      "decay": 0.2,
+      "predelay": 0,
+      "lowpass": 18500,
+      "highpass": 65,
+      "distanceWet": 0.025,
+      "earlyReflections": [
+        {
+          "delayMs": 13,
+          "gain": 0.07,
+          "pan": 0
+        }
+      ]
+    },
+    "synth": "rain",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Pingos dispersos na cobertura",
+        "Chuva ao longe em área aberta",
+        "Pequenas reflexões do abrigo"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.45,
+      "defaultVolume": 18
+    },
+    "variantOf": "rain",
+    "icon": "rain-roof",
+    "description": "Chuva ouvida sob uma cobertura, sem molhar o microfone."
+  },
+  {
+    "id": "narrow-street",
+    "name": "Rua estreita",
+    "category": "city",
+    "popular": false,
+    "prompt": "Outdoor field recording from a fixed sidewalk position on a narrow urban street between close building facades. Moderate cars passing at varying distances, soft tire noise and faraway footsteps, short discrete reflections off the opposite facade. Traffic flows irregularly rather than on a repeated rhythm. No horns, emergency sirens, construction or continuous tunnel roar. No music, no intelligible speech, no foreground voice. Natural unobtrusive dynamics with no abrupt peaks. No indoor hall reverberation.",
+    "acoustic": {
+      "kind": "reflective-outdoor",
+      "reverb": 0.09,
+      "decay": 0.2,
+      "predelay": 0,
+      "lowpass": 18500,
+      "highpass": 65,
+      "distanceWet": 0.025,
+      "earlyReflections": [
+        {
+          "delayMs": 46,
+          "gain": 0.07,
+          "pan": -0.22
+        },
+        {
+          "delayMs": 89,
+          "gain": 0.035,
+          "pan": 0.2
+        }
+      ]
+    },
+    "synth": "traffic",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Pneus passando entre fachadas",
+        "Reflexões discretas dos prédios",
+        "Passos afastados em uma rua estreita"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.45,
+      "defaultVolume": 18
+    },
+    "variantOf": "street",
+    "icon": "street",
+    "description": "Passagens de carros entre fachadas próximas."
+  },
+  {
+    "id": "courtyard",
+    "name": "Pátio",
+    "category": "city",
+    "popular": false,
+    "prompt": "Outdoor field recording from a fixed position in a quiet residential courtyard between low building walls. Distant filtered neighborhood traffic beyond the courtyard and occasional faraway footsteps with small discrete facade reflections. Sparse calm atmosphere, no busy crowd. No prominent birds, barking dogs, fountain, machinery or indoor reverberation. No music, no intelligible speech, no foreground voice. Natural unobtrusive dynamics with no abrupt peaks. Leave foreground silent for conversational recording.",
+    "acoustic": {
+      "kind": "reflective-outdoor",
+      "reverb": 0.09,
+      "decay": 0.2,
+      "predelay": 0,
+      "lowpass": 18500,
+      "highpass": 65,
+      "distanceWet": 0.025,
+      "earlyReflections": [
+        {
+          "delayMs": 46,
+          "gain": 0.07,
+          "pan": -0.22
+        },
+        {
+          "delayMs": 89,
+          "gain": 0.035,
+          "pan": 0.2
+        }
+      ]
+    },
+    "synth": "traffic",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Tráfego distante além do pátio",
+        "Passos ocasionais afastados",
+        "Reflexões leves entre paredes externas"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.45,
+      "defaultVolume": 18
+    },
+    "variantOf": "street",
+    "icon": "courtyard",
+    "description": "Um pátio tranquilo entre prédios, com sons distantes."
+  },
+  {
+    "id": "park",
+    "name": "Parque",
+    "category": "nature",
+    "popular": false,
+    "prompt": "Outdoor field recording from a fixed bench position in a calm urban park. Gentle breeze moving leaves, sparse distant bird calls and very quiet city traffic beyond the park. Natural irregular intervals and long calm gaps. No dense tropical jungle, prominent animals, running water, close footsteps or gusts striking the microphone. No music, no intelligible speech, no foreground voice. Natural unobtrusive dynamics with no abrupt peaks. Open air without indoor reverb or repeated birdsong patterns.",
+    "acoustic": {
+      "reverb": 0.015,
+      "decay": 0.22,
+      "predelay": 0,
+      "lowpass": 20000,
+      "highpass": 55,
+      "kind": "open",
+      "distanceWet": 0,
+      "earlyReflections": []
+    },
+    "synth": "forest",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Folhas se movendo com brisa",
+        "Pássaros esparsos afastados",
+        "Cidade discreta além do parque"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.45,
+      "defaultVolume": 18
+    },
+    "variantOf": "forest",
+    "icon": "park",
+    "description": "Folhas, pássaros esparsos e cidade ao longe."
+  },
+  {
+    "id": "car-rain",
+    "name": "Carro na chuva",
+    "category": "transport",
+    "popular": false,
+    "prompt": "Interior field recording from the front passenger seat of a parked car in steady rain with windows closed and engine off. Soft irregular droplets on the car roof and windshield, filtered exterior rain and the enclosed quiet cabin perspective. No moving tires, engine revs, wipers, indicator clicks or radio. No music, no intelligible speech, no foreground voice. Natural unobtrusive dynamics with no abrupt peaks. Rain remains outside the car; no open-air wind or indoor room echo.",
+    "acoustic": {
+      "reverb": 0.025,
+      "decay": 0.22,
+      "predelay": 0.002,
+      "lowpass": 17500,
+      "highpass": 45,
+      "kind": "vehicle",
+      "distanceWet": 0.025,
+      "earlyReflections": [
+        {
+          "delayMs": 4,
+          "gain": 0.032,
+          "pan": -0.15
+        },
+        {
+          "delayMs": 10,
+          "gain": 0.018,
+          "pan": 0.16
+        }
+      ]
+    },
+    "synth": "engine",
+    "sound": {
+      "version": 2,
+      "mode": "bed",
+      "durationSeconds": 30,
+      "promptInfluence": 0.7,
+      "signature": [
+        "Gotas no teto do carro parado",
+        "Chuva filtrada pelos vidros fechados",
+        "Cabine quieta sem motor ou limpador obrigatório"
+      ],
+      "backgroundDb": -30,
+      "crossfadeSeconds": 1.6,
+      "stereoWidth": 0.45,
+      "defaultVolume": 18
+    },
+    "variantOf": "car",
+    "icon": "car",
+    "description": "Gotas no teto e no vidro de um carro parado."
+  }
+]

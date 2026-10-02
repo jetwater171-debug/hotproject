@@ -1,0 +1,110 @@
+.velora-landing { --lp-ruby: #ff4059; --lp-text: #f3f1f5; --lp-muted: #a1a0ac; position: relative; isolation: isolate; min-height: 100dvh; overflow: hidden; background: #090a0d; color: var(--lp-text); font-family: 'DM Sans', sans-serif; }
+.velora-landing button { font-family: inherit; }
+.velora-landing .lp-skip { position: absolute; top: -80px; left: 20px; z-index: 20; border-radius: 8px; background: var(--lp-ruby); color: white; padding: 12px 16px; }
+.velora-landing .lp-skip:focus { top: 14px; }
+.velora-landing .lp-background { position: absolute; inset: 0 0 auto; height: 690px; z-index: -1; pointer-events: none; background: radial-gradient(ellipse at 80% 15%, #39121c16, transparent 53%); }
+.velora-landing .lp-background svg { width: 100%; height: 100%; }
+.velora-landing .lp-header, .velora-landing .lp-main, .velora-landing .lp-footer { width: min(1160px, calc(100% - 80px)); margin-inline: auto; }
+.velora-landing .lp-header { display: flex; align-items: center; justify-content: space-between; height: 91px; gap: 20px; }
+.velora-landing .lp-brand { display: flex; align-items: center; gap: 10px; padding: 0; }
+.velora-landing .lp-brand-mark { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; padding: 0 5px 4px 0; border-radius: 10px; background: var(--lp-ruby); color: #fff; font-size: 29px; font-weight: 800; letter-spacing: -5px; line-height: 1; }
+.velora-landing .lp-brand-mark > span { font-size: 23px; }
+.velora-landing .lp-brand strong { font-family: var(--heading-font, 'Manrope', sans-serif); font-weight: 800; font-size: 27px; letter-spacing: -1.3px; }
+.velora-landing .lp-brand strong > span { color: var(--lp-ruby); }
+.velora-landing .lp-header-actions { display: flex; align-items: center; gap: 23px; }
+.velora-landing .lp-login { color: #c3c1cd; padding: 11px 3px; font-size: 13px; transition: color .2s; }
+.velora-landing .lp-login:hover, .velora-landing .lp-hero-login:hover { color: #fff; }
+.velora-landing .lp-button { display: inline-flex; align-items: center; justify-content: center; gap: 20px; min-height: 48px; padding: 13px 21px; border: 1px solid #ff778738; border-radius: 11px; background: var(--lp-ruby); box-shadow: inset 0 1px 0 #ffffff14, 0 6px 20px #ff405913; font-size: 13px; font-weight: 550; color: #fff; transition: background .2s, box-shadow .2s, transform .2s; }
+.velora-landing .lp-button:hover { background: #ff556b; box-shadow: inset 0 1px 0 #ffffff14, 0 8px 25px #ff405925; }
+.velora-landing .lp-button:active { transform: scale(.98); }
+.velora-landing .lp-button-small { min-height: 39px; padding: 10px 15px; font-size: 12px; gap: 15px; background: #ff405913; border-color: #ff405939; color: #f1c2cc; box-shadow: none; }
+.velora-landing .lp-button-small:hover { background: #ff405925; }
+.velora-landing .lp-main:focus { outline: none; }
+.velora-landing .lp-hero { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, 1fr); align-items: center; gap: 80px; padding: 52px 0 58px; }
+.velora-landing .lp-kicker { display: flex; align-items: center; gap: 9px; color: #c2a6af; font-size: 12px; margin-bottom: 24px; }
+.velora-landing .lp-kicker i { width: 5px; height: 5px; border-radius: 50%; background: #ff4059; box-shadow: 0 0 12px #ff405937; }
+.velora-landing .lp-hero-copy h1 { font-family: var(--heading-font, 'Manrope', sans-serif); font-size: clamp(35px, 4.25vw, 55px); font-weight: 550; line-height: 1.15; letter-spacing: -2.35px; margin: 0 0 23px; }
+.velora-landing .lp-hero-copy h1 > span { color: #8f8e9c; }
+.velora-landing .lp-hero-copy > p { max-width: 385px; font-size: 15px; line-height: 1.85; color: #aaa8b6; }
+.velora-landing .lp-hero-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 22px; margin: 29px 0 25px; }
+.velora-landing .lp-hero-login { display: inline-flex; align-items: center; gap: 9px; min-height: 43px; color: #b1aeba; font-size: 12px; padding: 8px 0; transition: color .2s; }
+.velora-landing .lp-hero-detail { display: flex; align-items: center; flex-wrap: wrap; gap: 13px; color: #9793a2; font-size: 11px; }
+.velora-landing .lp-hero-detail > span { display: inline-flex; align-items: center; gap: 6px; }
+.velora-landing .lp-hero-detail svg { color: #b3a0aa; }
+.velora-landing .lp-hero-detail > i { width: 3px; height: 3px; border-radius: 50%; background: #57505f; }
+.velora-landing .lp-preview-wrap { min-width: 0; position: relative; }
+.velora-landing .lp-preview-wrap::before { content: ''; position: absolute; inset: -1px; z-index: -1; background: linear-gradient(135deg, #ff405926, #ffffff05 35%, transparent 75%); border-radius: 21px; transform: rotate(-2deg); }
+.velora-landing .lp-studio.card-spotlight { border-radius: 18px; border-color: #ffffff12; background: linear-gradient(145deg, #15151a, #101115 65%); padding: 22px; box-shadow: 0 20px 60px #0003, inset 0 1px 0 #ffffff04; }
+.velora-landing .lp-studio > * { position: relative; z-index: 1; }
+.velora-landing .lp-studio-header { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 19px; }
+.velora-landing .lp-studio-header > span { display: inline-flex; align-items: center; gap: 8px; font-size: 12px; color: #d3cfda; }
+.velora-landing .lp-studio-header svg { color: #ff8a9b; }
+.velora-landing .lp-studio-header > small { font-size: 10px; color: #a399aa; border: 1px solid #ffffff10; border-radius: 6px; padding: 4px 7px; }
+.velora-landing .lp-studio-script { padding: 14px 15px; border-radius: 11px; border: 1px solid #ffffff08; background: #0a0b0e; }
+.velora-landing .lp-studio-script > span { font-size: 10px; color: #8f879b; }
+.velora-landing .lp-studio-script > p { font-size: 13px; line-height: 1.75; color: #d3cbdc; margin-top: 7px; }
+.velora-landing .lp-script-tags { display: flex; gap: 7px; margin-top: 10px; }
+.velora-landing .lp-script-tags > span { border: 1px solid #ffffff08; border-radius: 5px; padding: 4px 7px; color: #a89aaf; font-size: 9px; }
+.velora-landing .lp-scene { height: 132px; margin: 13px 0 15px; overflow: hidden; border-radius: 10px; background: radial-gradient(ellipse at 50% 80%, #ff40590d, transparent 70%), #0d0e12; border: 1px solid #ffffff05; }
+.velora-landing .lp-scene-lines { position: absolute; inset: 0; width: 100%; height: 100%; fill: none; stroke: #ffffff0a; stroke-width: 1; }
+.velora-landing .lp-scene-glyph { position: absolute; top: 10px; left: calc(50% - 42px); z-index: 1; transition: transform .4s cubic-bezier(.16,1,.3,1); }
+.velora-landing .lp-scene-glyph .environment-emoji { filter: drop-shadow(0 6px 13px #0008); }
+.velora-landing .lp-scene-glow { position: absolute; top: 60px; left: calc(50% - 50px); width: 100px; height: 36px; border-radius: 50%; background: radial-gradient(ellipse, #ff405927, transparent 70%); opacity: var(--lp-glow, .6); transition: opacity .2s; }
+.velora-landing .lp-scene-label { position: absolute; left: 12px; right: 12px; bottom: 10px; display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.velora-landing .lp-scene-label > span { font-size: 12px; color: #e4d1dc; }
+.velora-landing .lp-scene-label > small { font-size: 9px; color: #96909e; }
+.velora-landing .lp-rain-lines { position: absolute; inset: 0; opacity: var(--lp-rain-level, .23); overflow: hidden; pointer-events: none; transition: opacity .2s; }
+.velora-landing .lp-rain-lines i { position: absolute; top: -16px; height: 12px; width: 1px; background: #ff9eac; transform: rotate(10deg); animation: lp-rain 2.4s linear infinite; animation-play-state: var(--lp-play, running); }
+@keyframes lp-rain { from { transform: translate3d(0, 0, 0) rotate(10deg); opacity: 0; } 20% { opacity: .8; } to { transform: translate3d(-20px, 155px, 0) rotate(10deg); opacity: 0; } }
+.velora-landing .lp-atmosphere-heading { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 10px; }
+.velora-landing .lp-atmosphere-heading > strong { font-size: 12px; color: #d5d0dd; font-weight: 500; }
+.velora-landing .lp-atmosphere-heading > span { color: #8e8499; font-size: 10px; }
+.velora-landing .lp-shortcuts { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
+.velora-landing .lp-shortcuts button { position: relative; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 5px; padding: 8px 3px; min-height: 63px; border: 1px solid #ffffff08; border-radius: 9px; background: #19181e; color: #aaa3b4; font-size: 10px; transition: border-color .2s, background .2s, transform .2s; }
+.velora-landing .lp-shortcuts button:hover { border-color: #ffffff24; transform: translateY(-2px); }
+.velora-landing .lp-shortcuts button.active { border-color: #ff405942; color: #f1cbd4; background: #ff40590c; }
+.velora-landing .lp-shortcuts button > svg:last-child:not(.environment-emoji) { position: absolute; right: 5px; top: 5px; color: #ff8a9b; }
+.velora-landing .lp-environment-select { margin-top: 12px; display: grid; grid-template-columns: minmax(0, 1fr) 46%; align-items: center; gap: 10px; }
+.velora-landing .lp-environment-select > label { color: #9f95aa; font-size: 10px; }
+.velora-landing .lp-environment-select > div { position: relative; min-width: 0; }
+.velora-landing .lp-environment-select select { display: block; width: 100%; min-height: 36px; appearance: none; padding: 7px 26px 7px 10px; border: 1px solid #ffffff12; border-radius: 7px; background: #17161b; color: #c6bfcf; font: inherit; font-size: 11px; cursor: pointer; color-scheme: dark; }
+.velora-landing .lp-environment-select > div > svg { position: absolute; right: 9px; top: 12px; pointer-events: none; color: #a89aac; }
+.velora-landing .lp-blend { margin-top: 14px; }
+.velora-landing .lp-blend > label { display: flex; justify-content: space-between; color: #b3a8be; font-size: 10px; margin-bottom: 5px; }
+.velora-landing .lp-blend > label > span { color: #918398; font-variant-numeric: tabular-nums; }
+.velora-landing .lp-blend input { width: 100%; height: 16px; accent-color: #ff4059; background: transparent; margin: 0; cursor: pointer; }
+.velora-landing .lp-blend.is-silent { opacity: .65; }
+.velora-landing .lp-blend input:disabled { cursor: default; }
+.velora-landing .lp-preview-note { margin-top: 10px; font-size: 9px; color: #8e819a; text-align: center; line-height: 1.6; }
+.velora-landing .lp-benefits { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 38px; padding: 30px 0 35px; border-top: 1px solid #ffffff0a; }
+.velora-landing .lp-benefits > article { display: flex; align-items: flex-start; gap: 14px; }
+.velora-landing .lp-feature-icon { display: grid; place-items: center; width: 36px; height: 36px; border-radius: 10px; border: 1px solid #ffffff0a; background: #15131a; color: #d497a8; flex-shrink: 0; }
+.velora-landing .lp-benefits h2 { font-size: 14px; font-weight: 550; letter-spacing: -.2px; line-height: 1.5; margin: 1px 0 7px; }
+.velora-landing .lp-benefits p { font-size: 12px; line-height: 1.8; color: #9992a4; max-width: 250px; }
+.velora-landing .lp-final { display: flex; align-items: center; justify-content: space-between; gap: 25px; padding: 25px 30px; margin: 5px 0 26px; border: 1px solid #ffffff0b; border-radius: 15px; background: linear-gradient(110deg, #151116, #111114); }
+.velora-landing .lp-final h2 { font-size: 22px; letter-spacing: -.7px; font-weight: 550; margin-bottom: 6px; }
+.velora-landing .lp-final p { font-size: 12px; line-height: 1.75; color: #a397aa; }
+.velora-landing .lp-final .lp-button { min-height: 43px; font-size: 12px; flex-shrink: 0; }
+.velora-landing .lp-footer { display: flex; align-items: center; gap: 18px; padding: 0 0 28px; color: #8c8296; font-size: 11px; }
+.velora-landing .lp-footer > span { font-family: var(--heading-font, 'Manrope', sans-serif); font-size: 21px; font-weight: 750; letter-spacing: -1.2px; color: #b9acbf; }
+.velora-landing .lp-footer > span > span { color: #ff4059; }
+.velora-landing .lp-footer > p { font-size: 10px; }
+.velora-landing .lp-footer > button { display: inline-flex; align-items: center; gap: 7px; min-height: 35px; padding: 8px 0; margin-left: auto; font-size: 11px; color: #b5a7c0; }
+.velora-landing.lp-reduced *, .velora-landing.lp-reduced *::before, .velora-landing.lp-reduced *::after { animation: none !important; transition: none !important; }
+@media (max-width: 1050px) { .velora-landing .lp-hero { gap: 40px; } .velora-landing .lp-hero-copy h1 { font-size: 43px; letter-spacing: -1.8px; } .velora-landing .lp-hero-copy > p { font-size: 14px; } .velora-landing .lp-hero-actions { gap: 15px; } .velora-landing .lp-benefits { gap: 23px; } }
+@media (max-width: 760px) { .velora-landing .lp-header, .velora-landing .lp-main, .velora-landing .lp-footer { width: calc(100% - 42px); } .velora-landing .lp-header { height: 74px; } .velora-landing .lp-header-actions { gap: 17px; } .velora-landing .lp-brand strong { font-size: 25px; } .velora-landing .lp-hero { grid-template-columns: minmax(0, 1fr); gap: 29px; padding: 32px 0; } .velora-landing .lp-hero-copy { text-align: center; } .velora-landing .lp-kicker { justify-content: center; margin-bottom: 16px; font-size: 11px; } .velora-landing .lp-hero-copy h1 { font-size: clamp(35px, 6.8vw, 47px); letter-spacing: -1.7px; margin-bottom: 17px; } .velora-landing .lp-hero-copy > p { max-width: 430px; margin-inline: auto; font-size: 13px; line-height: 1.8; } .velora-landing .lp-hero-actions { justify-content: center; margin: 22px 0 17px; gap: 18px; } .velora-landing .lp-hero-actions .lp-button { min-height: 44px; padding: 12px 17px; font-size: 12px; gap: 14px; } .velora-landing .lp-hero-login { font-size: 11px; } .velora-landing .lp-hero-detail { justify-content: center; font-size: 10px; } .velora-landing .lp-preview-wrap { width: min(490px, 100%); margin-inline: auto; } .velora-landing .lp-studio.card-spotlight { padding: 18px; } .velora-landing .lp-studio-header { margin-bottom: 14px; } .velora-landing .lp-studio-script { padding: 11px 13px; } .velora-landing .lp-studio-script > p { font-size: 12px; } .velora-landing .lp-scene { height: 115px; margin-top: 11px; margin-bottom: 13px; } .velora-landing .lp-scene-glyph { top: 2px; } .velora-landing .lp-shortcuts button { min-height: 58px; padding: 6px 3px; } .velora-landing .lp-environment-select { margin-top: 9px; } .velora-landing .lp-blend { margin-top: 10px; } .velora-landing .lp-preview-note { margin-top: 7px; } .velora-landing .lp-benefits { grid-template-columns: 1fr; padding: 26px 0; gap: 20px; } .velora-landing .lp-benefits > article { max-width: 490px; width: 100%; margin-inline: auto; gap: 13px; } .velora-landing .lp-benefits h2 { font-size: 13px; margin-bottom: 4px; } .velora-landing .lp-benefits p { max-width: 100%; font-size: 11px; line-height: 1.7; } .velora-landing .lp-feature-icon { width: 33px; height: 33px; border-radius: 9px; } .velora-landing .lp-final { padding: 22px; text-align: center; flex-direction: column; gap: 17px; margin-bottom: 22px; } .velora-landing .lp-final h2 { font-size: 21px; } .velora-landing .lp-final p { font-size: 11px; max-width: 320px; margin-inline: auto; } .velora-landing .lp-final .lp-button { width: 100%; max-width: 330px; } .velora-landing .lp-footer { gap: 11px; padding-bottom: 22px; } }
+@media (max-width: 380px) { .velora-landing .lp-header, .velora-landing .lp-main, .velora-landing .lp-footer { width: calc(100% - 32px); } .velora-landing .lp-header-actions { gap: 12px; } .velora-landing .lp-brand strong { font-size: 23px; } .velora-landing .lp-brand-mark { width: 27px; height: 27px; border-radius: 9px; font-size: 26px; } .velora-landing .lp-brand { gap: 7px; } .velora-landing .lp-button-small { font-size: 11px; padding: 8px 11px; gap: 8px; } .velora-landing .lp-login { font-size: 12px; } .velora-landing .lp-hero-copy h1 { font-size: 32px; } .velora-landing .lp-hero-actions { gap: 13px; } .velora-landing .lp-studio.card-spotlight { padding: 15px; } .velora-landing .lp-hero-detail { gap: 8px; font-size: 9px; } .velora-landing .lp-studio-script > p { font-size: 11px; } .velora-landing .lp-shortcuts button { font-size: 9px; } .velora-landing .lp-final { padding: 19px; } .velora-landing .lp-final h2 { font-size: 19px; } .velora-landing .lp-footer > p { font-size: 9px; } }
+@media (prefers-reduced-motion: reduce) { .velora-landing *, .velora-landing *::before, .velora-landing *::after { animation: none !important; transition: none !important; } }
+@media (max-width: 760px) {
+  .velora-landing .lp-hero { padding: 24px 0 28px; gap: 24px; }
+  .velora-landing .lp-kicker { margin-bottom: 14px; }
+  .velora-landing .lp-hero-actions { margin: 20px 0 0; }
+  .velora-landing .lp-hero-detail { display: none; }
+  .velora-landing .lp-studio-script > span, .velora-landing .lp-script-tags { display: none; }
+  .velora-landing .lp-studio-script > p { margin-top: 0; }
+  .velora-landing .lp-scene { height: 100px; margin-block: 11px; }
+  .velora-landing .lp-scene-glyph { top: -7px; }
+  .velora-landing .lp-scene-label { bottom: 8px; }
+  .velora-landing .lp-benefits { padding-block: 22px; gap: 17px; }
+  .velora-landing .lp-final { padding: 20px; gap: 15px; }
+}

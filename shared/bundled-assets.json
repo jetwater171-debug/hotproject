@@ -1,0 +1,342 @@
+{
+  "version": 1,
+  "beds": [
+    {
+      "environment": "forest",
+      "id": "forest-field-v1",
+      "file": "audio/ambiences/forest.mp3",
+      "source": "https://freesound.org/people/Fester993/sounds/564436/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "ab5960699f2b2981058a9745e02842df3fa89f66ef8b1c655cf4854c4a91e4ab",
+      "label": "Floresta no verão · Monte Gelato",
+      "reviewed": false,
+      "notes": "Gravação publicada pelo autor; preview público HQ. Conversão MP3 estéreo48k/160kbps; primeiros180s preservados. Ainda sem escuta de aprovação.",
+      "durationSeconds": 180,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/564/564436_5456250-hq.mp3",
+        "sha256": "44b88ea212b11a94ae7dba7ad8cb729de44020bebcec0889902fc8ee7ccb012c",
+        "durationSeconds": 181.179688,
+        "description": "A Simple forest Ambience recorded in Monte Gelato (Italy) during summer, using a Zoom H4n."
+      }
+    },
+    {
+      "environment": "river",
+      "id": "river-field-v1",
+      "file": "audio/ambiences/river.mp3",
+      "source": "https://freesound.org/people/justingregoire/sounds/205179/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "1e8df6a73ff9da9eccb8959464a2e6198b8d7b7b2e35a1ee1bc08f02195f5709",
+      "label": "Rio de perto · água corrente",
+      "reviewed": false,
+      "notes": "Gravação publicada pelo autor; preview público HQ. Conversão MP3 estéreo48k/160kbps; duração integral. Ainda sem escuta de aprovação.",
+      "durationSeconds": 60.737708,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/205/205179_2328350-hq.mp3",
+        "sha256": "546a76694ad6338d6611f232c7c1c7d3030989067dacd2e6d6af1ded891c66e1",
+        "durationSeconds": 60.737708,
+        "description": "A river closely recorded with a Tascam DR-40"
+      }
+    },
+    {
+      "environment": "street",
+      "id": "street-field-v1",
+      "file": "audio/ambiences/street.mp3",
+      "source": "https://freesound.org/people/visionear/sounds/723607/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "2a947c13bbf41f4f1734a1607360093918710c6de402a7ebc2ebb45f45124a31",
+      "label": "Rua · trânsito na Cidade do México",
+      "reviewed": false,
+      "notes": "Gravação publicada pelo autor; preview público HQ. Conversão MP3 estéreo48k/160kbps; duração integral. Ainda sem escuta de aprovação.",
+      "durationSeconds": 87.84,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/723/723607_10869493-hq.mp3",
+        "sha256": "8366a3bc557cef4578ff8892ebd0dcab4dad3ff9f9b3349a8931f832e129577a",
+        "durationSeconds": 87.84,
+        "description": "Ciudad de Mexico ,DF ,Colonia Roma ,Busy Street, traffic ,urban, city ambience, Ed Larez VSNR"
+      }
+    },
+    {
+      "environment": "mall",
+      "id": "mall-field-v1",
+      "file": "audio/ambiences/mall.mp3",
+      "source": "https://freesound.org/people/soundtracvkradio/sounds/345019/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "2e41bbb6e73c78b328e8216ae6e226016fb832744ebf47c14522bde6e2874a64",
+      "label": "Shopping · movimento de pessoas",
+      "reviewed": false,
+      "notes": "Gravação publicada pelo autor; preview público HQ. Conversão MP3 estéreo48k/160kbps; duração integral. Ainda sem escuta de aprovação.",
+      "durationSeconds": 156.094708,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/345/345019_1015909-hq.mp3",
+        "sha256": "1a66a3c1f8af7739b6dac6e0e9a1bf5907af4ed587d6937702f43f2644b722e5",
+        "durationSeconds": 156.094694,
+        "description": "Ambience inside a busy shopping mall."
+      }
+    },
+    {
+      "environment": "bus",
+      "id": "bus-field-v1",
+      "file": "audio/ambiences/bus.mp3",
+      "source": "https://freesound.org/people/ivoliYT/sounds/723833/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "862ba9bd4073e0df070583a591ec050ef63c3cb855ba4ec656950180891e0aa0",
+      "label": "Ônibus · interior em movimento",
+      "reviewed": false,
+      "notes": "Gravação publicada pelo autor; preview público HQ. Conversão MP3 estéreo48k/160kbps; primeiros180s preservados. Ainda sem escuta de aprovação.",
+      "durationSeconds": 180,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/723/723833_14961185-hq.mp3",
+        "sha256": "c1bd148fa220f4be388e5ed5a3425e17980cae08f5363094e891b33cbbc4a53f",
+        "durationSeconds": 190.925,
+        "description": "Ambience sound of bus interior while driving."
+      }
+    },
+    {
+      "environment": "kitchen",
+      "id": "kitchen-field-v1",
+      "file": "audio/ambiences/kitchen.mp3",
+      "source": "https://freesound.org/people/Kinoton/sounds/671279/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "165f40b5ea33a9e246e9e3f904fef5b3759c5293b16d0f223d81077895e4d229",
+      "label": "Cozinha · geladeira e janela aberta",
+      "reviewed": false,
+      "notes": "Gravação publicada pelo autor; preview público HQ. Conversão MP3 estéreo48k/160kbps; primeiros180s preservados. Ainda sem escuta de aprovação.",
+      "durationSeconds": 180,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/671/671279_2247456-hq.mp3",
+        "sha256": "69e0d36cdd73d1fc9b5855551d04f490677e98b464c820392f9fbb28f4afdd65",
+        "durationSeconds": 240,
+        "description": "Room tone of an appartments kitchen, windows open, day, summer, european birds, distant traffic hum, fridge motor"
+      }
+    },
+    {
+      "environment": "shower",
+      "id": "shower-field-v1",
+      "file": "audio/ambiences/shower.mp3",
+      "source": "https://freesound.org/people/augustagui/sounds/751314/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "bdfd859d3eb335092887dc348f443c16ba2e55a37e0de2a0243e72feab699cfb",
+      "label": "Chuveiro elétrico · água corrente",
+      "reviewed": false,
+      "notes": "Gravação do autor, preview público HQ sob CC0. Trecho20–200s selecionado para evitar abertura e fechamento da torneira descritos na fonte. MP3 estéreo48k/160kbps. Sem escuta de aprovação.",
+      "durationSeconds": 180,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/751/751314_13754751-hq.mp3",
+        "sha256": "3fa0097be32ad2ff40f108b9de86e992232de91d124623731fb39d9667c93ecf",
+        "durationSeconds": 242.041813,
+        "description": "Typical brazillian electric shower, opening the faucet, water running, bathing or taking a shower and closing the faucet.\n\nRecorded using a Sennheiser MKH-70 P48 + Zoom F8",
+        "segmentStartSeconds": 20,
+        "segmentDurationSeconds": 180
+      }
+    },
+    {
+      "environment": "car-rain",
+      "id": "car-rain-field-v1",
+      "file": "audio/ambiences/car-rain.mp3",
+      "source": "https://freesound.org/people/Borgory/sounds/650774/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "9f688757518bba6e2c33887d518fa2b5d27f9e2d03461835ab44d06c0ff2968a",
+      "label": "Chuva no teto · interior do carro",
+      "reviewed": false,
+      "notes": "Gravação publicada pelo autor; preview público HQ. Conversão MP3 estéreo48k/160kbps; duração integral. Ainda sem escuta de aprovação.",
+      "durationSeconds": 172.666667,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/650/650774_801011-hq.mp3",
+        "sha256": "908671001883363f44054e9d03f2ef097576b554f952879da876e57ec46fd0b0",
+        "durationSeconds": 172.666667,
+        "description": "Rain on Car\nRecorded with Zoom H5 48kHz 24Bit"
+      }
+    },
+    {
+      "environment": "wind",
+      "id": "wind-field-v1",
+      "file": "audio/ambiences/wind.mp3",
+      "source": "https://freesound.org/people/felix.blume/sounds/217506/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "ed269e69f5bf9257845d45fce08f4b26d7d432fd51ad4233fa29962ab1837b61",
+      "label": "Vento no campo · Texas",
+      "reviewed": false,
+      "notes": "Gravação publicada pelo autor; preview público HQ. Conversão MP3 estéreo48k/160kbps; primeiros180s preservados. Ainda sem escuta de aprovação.",
+      "durationSeconds": 180,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/217/217506_1661766-hq.mp3",
+        "sha256": "dace89ad0d1e15b2bf5527a0fe8f0cbcf6a2dd18f6ee7b27c70fd3cadb2e49d7",
+        "durationSeconds": 212.31825,
+        "description": "Wind whistling with some squalls in a field in Texas.\r\n\r\nSound recorded by a MS setup Schoeps CCM41+CCM8\r\nSound Devices 788T recorder with CL8\r\nMS is encoded in STEREO Left-Right\r\nrecorded in may 2013 in Texas (close to Dumas), USA.\r\nSound Reference: @CD130528T007\r\n\r\nmore sounds on &lt;a href=\"http://www.felixblume.com/\" rel=\"nofollow\"&gt;http://www.felixblume.com/&lt;/a&gt;\r\n\r\nPlease rate or comment the sound if you like it!"
+      }
+    },
+    {
+      "environment": "storm",
+      "id": "storm-field-v1",
+      "file": "audio/ambiences/storm.mp3",
+      "source": "https://freesound.org/people/Borys_Kozielski/sounds/316831/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "447c5a0dfec20a8f7b20b7f17862879307e180cd4995b702b99e2924ce8ba77f",
+      "label": "Temporal · chuva e trovões em Varsóvia",
+      "reviewed": false,
+      "notes": "Gravação publicada pelo autor; preview público HQ. Conversão MP3 estéreo48k/160kbps; primeiros180s preservados. Ainda sem escuta de aprovação.",
+      "durationSeconds": 180,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/316/316831_2609215-hq.mp3",
+        "sha256": "7fb4b7da3688044fc8b76300e555c06d4e2267d76b98d621af39117337f79d9f",
+        "durationSeconds": 187.155351,
+        "description": "Nagranie wykonane podczas burzy nad Warszawą 19 lipca 2015 roku bez użycia włochacza zasłaniającego mikrofony. Jakość 320 kbps mp3 High gain, AGC comp - off"
+      }
+    },
+    {
+      "environment": "cafe",
+      "id": "cafe-field-v1",
+      "file": "audio/ambiences/cafe.mp3",
+      "source": "https://commons.wikimedia.org/wiki/File:Cafe_ambiance.ogg",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "5804d8914cee4ad70da390dd7f51b709a971aaa9a31ac86e20672e456c8b13c7",
+      "label": "Café · conversas ao fundo",
+      "reviewed": false,
+      "notes": "Obra do autor publicada em2024 sob CC0. Primeiros180s do original20min, convertido MP3 estéreo48k/160kbps; sem escuta de aprovação.",
+      "durationSeconds": 180,
+      "original": {
+        "url": "https://upload.wikimedia.org/wikipedia/commons/5/54/Cafe_ambiance.ogg",
+        "sha256": "6360791fdcee1f64638f0fc9abd6d2c7a1aa75fd3d2b80033170a02d025099dc",
+        "durationSeconds": 1200
+      }
+    },
+    {
+      "environment": "rain",
+      "id": "rain-field-v1",
+      "file": "audio/ambiences/rain.mp3",
+      "source": "https://freesound.org/people/o_ciz/sounds/475636/",
+      "license": "cc0",
+      "licenseUrl": "https://creativecommons.org/publicdomain/zero/1.0/",
+      "sha256": "ae9f6736fbcf1be3fd957f58ceb24ff7334f2d43d3c18c51e1fb3de6397aecaf",
+      "label": "Chuva leve · floresta",
+      "reviewed": false,
+      "notes": "Gravação publicada por o_ciz: chuva leve em floresta, não chuva urbana. Preview HQ convertido MP3 estéreo48k/160kbps, duração integral. Sem escuta de aprovação.",
+      "durationSeconds": 135.972,
+      "original": {
+        "url": "https://cdn.freesound.org/previews/475/475636_7009965-hq.mp3",
+        "sha256": "3ff12ddb27fdb183467c1aa2a3827b62747aea56c0d06a5baf036cfc93ed7028"
+      }
+    }
+  ],
+  "irs": [
+    {
+      "environment": "bathroom",
+      "id": "bathroom-room-v1",
+      "file": "audio/impulses/bathroom.wav",
+      "source": "https://github.com/itsmusician/IR-Library/blob/07cbb6f8779a4a448d02355c355f0cef8916b78d/Rooms/Commercial/Hotels/Bathrooms/Reflective%20Half%20Bathroom.wav",
+      "license": "mit",
+      "licenseUrl": "https://github.com/itsmusician/IR-Library/blob/07cbb6f8779a4a448d02355c355f0cef8916b78d/License.md",
+      "sha256": "c50578d05f434aab676efc5cfff36a58f1eb8c0bc66f1237197208af58eca95c",
+      "label": "Reflective Half Bathroom",
+      "reviewed": false,
+      "notes": "IR de localização publicada por Conner. Reamostrada PCM16estéreo48k; duração integral. Janela direta0–5ms é ajuste inicial, não uma medição. Ainda sem escuta de aprovação.",
+      "durationSeconds": 0.340854,
+      "acoustic": {
+        "directSound": "included",
+        "directArrivalMs": 0,
+        "directWindowMs": 5,
+        "predelayMode": "embedded",
+        "predelayMs": 0,
+        "wet": 0.18,
+        "notes": "IR de localização publicada por Conner. Reamostrada PCM16estéreo48k; duração integral. Janela direta0–5ms é ajuste inicial, não uma medição. Ainda sem escuta de aprovação."
+      },
+      "original": {
+        "url": "https://raw.githubusercontent.com/itsmusician/IR-Library/07cbb6f8779a4a448d02355c355f0cef8916b78d/Rooms/Commercial/Hotels/Bathrooms/Reflective%20Half%20Bathroom.wav",
+        "sha256": "fc7e4ce68d745bc4ad64aaff25d293c5d49eaae810c19626edd9c594b08593e5",
+        "durationSeconds": 0.340839
+      }
+    },
+    {
+      "environment": "bedroom",
+      "id": "bedroom-room-v1",
+      "file": "audio/impulses/bedroom.wav",
+      "source": "https://github.com/itsmusician/IR-Library/blob/07cbb6f8779a4a448d02355c355f0cef8916b78d/Rooms/Residential/Colonial%20House/Colonial%20Bedroom%20(Light%20Treatment).wav",
+      "license": "mit",
+      "licenseUrl": "https://github.com/itsmusician/IR-Library/blob/07cbb6f8779a4a448d02355c355f0cef8916b78d/License.md",
+      "sha256": "bf885a58ba894570fec65adc645fd8007aff487b5d68fa781162863fb00af88f",
+      "label": "Colonial Bedroom (Light Treatment)",
+      "reviewed": false,
+      "notes": "IR de localização publicada por Conner. Reamostrada PCM16estéreo48k; duração integral. Janela direta0–5ms é ajuste inicial, não uma medição. Ainda sem escuta de aprovação.",
+      "durationSeconds": 0.499979,
+      "acoustic": {
+        "directSound": "included",
+        "directArrivalMs": 0,
+        "directWindowMs": 5,
+        "predelayMode": "embedded",
+        "predelayMs": 0,
+        "wet": 0.07,
+        "notes": "IR de localização publicada por Conner. Reamostrada PCM16estéreo48k; duração integral. Janela direta0–5ms é ajuste inicial, não uma medição. Ainda sem escuta de aprovação."
+      },
+      "original": {
+        "url": "https://raw.githubusercontent.com/itsmusician/IR-Library/07cbb6f8779a4a448d02355c355f0cef8916b78d/Rooms/Residential/Colonial%20House/Colonial%20Bedroom%20(Light%20Treatment).wav",
+        "sha256": "38d3ad63b6bf36cfab2a4c18e8d54e60cfa15cc0525b8a6f325da494c1517145",
+        "durationSeconds": 0.499979
+      }
+    },
+    {
+      "environment": "livingroom",
+      "id": "livingroom-room-v1",
+      "file": "audio/impulses/livingroom.wav",
+      "source": "https://github.com/itsmusician/IR-Library/blob/07cbb6f8779a4a448d02355c355f0cef8916b78d/Rooms/Residential/Arroyo%20House/Arroyo%20House%20Living%20Room%20Close%20A.wav",
+      "license": "mit",
+      "licenseUrl": "https://github.com/itsmusician/IR-Library/blob/07cbb6f8779a4a448d02355c355f0cef8916b78d/License.md",
+      "sha256": "59e06e13724f83f8de06dbde803ace29a309b2aa857980bef2bcc908ea491904",
+      "label": "Arroyo House Living Room Close A",
+      "reviewed": false,
+      "notes": "IR de localização publicada por Conner. Reamostrada PCM16estéreo48k; duração integral. Janela direta0–5ms é ajuste inicial, não uma medição. Ainda sem escuta de aprovação.",
+      "durationSeconds": 2.001479,
+      "acoustic": {
+        "directSound": "included",
+        "directArrivalMs": 0,
+        "directWindowMs": 5,
+        "predelayMode": "embedded",
+        "predelayMs": 0,
+        "wet": 0.12,
+        "notes": "IR de localização publicada por Conner. Reamostrada PCM16estéreo48k; duração integral. Janela direta0–5ms é ajuste inicial, não uma medição. Ainda sem escuta de aprovação."
+      },
+      "original": {
+        "url": "https://raw.githubusercontent.com/itsmusician/IR-Library/07cbb6f8779a4a448d02355c355f0cef8916b78d/Rooms/Residential/Arroyo%20House/Arroyo%20House%20Living%20Room%20Close%20A.wav",
+        "sha256": "6f5de15d6a1df14243db69ce69c644d5333b5d7958a3caf44adbb97950b5897f",
+        "durationSeconds": 2.001479
+      }
+    },
+    {
+      "environment": "garage",
+      "id": "garage-room-v1",
+      "file": "audio/impulses/garage.wav",
+      "source": "https://github.com/itsmusician/IR-Library/blob/07cbb6f8779a4a448d02355c355f0cef8916b78d/Rooms/Residential/College%20House/College%20House%20Garage%20Bang%20Snap%20Near.wav",
+      "license": "mit",
+      "licenseUrl": "https://github.com/itsmusician/IR-Library/blob/07cbb6f8779a4a448d02355c355f0cef8916b78d/License.md",
+      "sha256": "b49923316cee43c02a32deee03ba31456b7b6b8360897a175667d87504706f91",
+      "label": "College House Garage Bang Snap Near",
+      "reviewed": false,
+      "notes": "IR de localização publicada por Conner. Reamostrada PCM16estéreo48k; duração integral. Janela direta0–5ms é ajuste inicial, não uma medição. Ainda sem escuta de aprovação.",
+      "durationSeconds": 0.728625,
+      "acoustic": {
+        "directSound": "included",
+        "directArrivalMs": 0,
+        "directWindowMs": 5,
+        "predelayMode": "embedded",
+        "predelayMs": 0,
+        "wet": 0.14,
+        "notes": "IR de localização publicada por Conner. Reamostrada PCM16estéreo48k; duração integral. Janela direta0–5ms é ajuste inicial, não uma medição. Ainda sem escuta de aprovação."
+      },
+      "original": {
+        "url": "https://raw.githubusercontent.com/itsmusician/IR-Library/07cbb6f8779a4a448d02355c355f0cef8916b78d/Rooms/Residential/College%20House/College%20House%20Garage%20Bang%20Snap%20Near.wav",
+        "sha256": "a2b2cab9a6c93da61d1a8b655ed70d6dcfab0ffd655faa7a693f7562544752ca",
+        "durationSeconds": 0.728617
+      }
+    }
+  ]
+}

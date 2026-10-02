@@ -1,0 +1,12 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.tsbuildinfo
+.qa/
+.cache/
+server/ambience-library/
+
+server/ambience-cache/
+.vercel/
