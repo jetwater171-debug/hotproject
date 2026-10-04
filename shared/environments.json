@@ -38,8 +38,8 @@
     "popular": true,
     "prompt": "",
     "acoustic": {
-      "reverb": 0.18,
-      "decay": 0.8,
+      "reverb": 0.14,
+      "decay": 0.55,
       "predelay": 0.006,
       "lowpass": 18000,
       "highpass": 65,
@@ -1297,8 +1297,8 @@
     "popular": false,
     "prompt": "Interior field recording from a fixed position beside a running domestic shower, outside the water spray. Continuous small water streams hitting a tiled shower floor with soft splashes and drain flow, enclosed close tile reflections. Keep the shower running steadily, with no faucet clicks, toilet flush, bathtub filling or outdoor rain. No music, no intelligible speech, no foreground voice. Natural unobtrusive dynamics with no abrupt peaks. Record the room rather than water hitting the microphone.",
     "acoustic": {
-      "reverb": 0.18,
-      "decay": 0.8,
+      "reverb": 0.14,
+      "decay": 0.55,
       "predelay": 0.006,
       "lowpass": 18000,
       "highpass": 65,

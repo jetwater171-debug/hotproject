@@ -54,7 +54,7 @@ export async function runPrepareAmbiences(argv = [], { catalog, libraryDir = DEF
     }
     const item = { id: environment.id, status, mode: recipe.mode, durationSeconds: recipe.durationSeconds, promptInfluence: recipe.promptInfluence, revision: recipe.revision };
     plan.push(item);
-    log(`${item.id}: ${status}${status === 'silent' ? ' — apenas acústica, sem geração' : ` — ${item.durationSeconds}s, influência ${item.promptInfluence}`}`);
+    log(`${item.id}: ${status}${status === 'silent' ? ' — apenas acústica, sem geração' : status === 'recorded' ? ' — gravação incluída, sem geração' : status === 'approved' ? ' — arquivo aprovado, sem geração' : ` — geração ${item.durationSeconds}s, influência ${item.promptInfluence}`}`);
     if (status === 'generated') log(`Candidato local, ainda não revisado: ${resolve(cacheDir, `${recipe.revision}.mp3`)}`);
   }
   const missing = plan.filter(item => item.status === 'missing');

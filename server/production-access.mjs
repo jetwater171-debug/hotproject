@@ -52,7 +52,7 @@ export function createProductionAccess({ env = process.env, fetchImpl = globalTh
       if (origin) {
         res.setHeader('Access-Control-Allow-Origin', origin); res.setHeader('Vary', 'Origin');
         res.setHeader('Access-Control-Allow-Headers', 'Authorization, Content-Type'); res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
-        res.setHeader('Access-Control-Expose-Headers', 'X-Voice-Model, X-Guide-Duration, X-Ambience-Source, X-Ambience-Reviewed, X-Ambience-Revision, X-Ambience-Provenance, X-Audio-Resource-Metadata');
+        res.setHeader('Access-Control-Expose-Headers', 'X-Voice-Model, X-Guide-Duration, X-Speech-Format, X-Speech-Container, X-Speech-Sample-Rate, X-Speech-Bit-Depth, X-Ambience-Source, X-Ambience-Reviewed, X-Ambience-Revision, X-Ambience-Provenance, X-Audio-Resource-Metadata');
       }
     },
     async authenticate(req) {

@@ -8,6 +8,7 @@ import { createAmbienceLibrary, DEFAULT_LIBRARY_DIR, detectAudioType, readAudioF
 import { createBundledAssets, DEFAULT_BUNDLE_MANIFEST, DEFAULT_PUBLIC_DIR } from './bundled-assets.mjs';
 import { inspectWav } from './wav-audio.mjs';
 import { AccessError, createProductionAccess } from './production-access.mjs';
+import { AudioResponseLimitError, LOSSLESS_GUIDE_MAX_SECONDS, LOSSLESS_MAX_BYTES, LOSSLESS_MAX_CHARS, pcm24ToWav, readBoundedAudioResponse, speechFormats } from './speech-audio.mjs';
 
 export const MODEL = 'eleven_v3';
 export const SOUND_MODEL = 'eleven_text_to_sound_v2';
@@ -79,14 +80,15 @@ async function readVoiceGuide(req, defaultVoiceId, { maxBytes = MAX_GUIDE_BYTES,
   const voiceId = form.get('voiceId') ?? defaultVoiceId;
   if (!validVoiceId(voiceId)) reject(400, 'invalid_voice', 'Escolha uma voz válida antes de gerar.');
   const quality = form.get('quality') ?? 'standard';
-  if (!['standard', 'high'].includes(quality)) reject(400, 'invalid_quality', 'Escolha a qualidade padrão ou alta.');
+  if (typeof quality !== 'string' || !Object.hasOwn(speechFormats, quality)) reject(400, 'invalid_quality', 'Escolha áudio sem compressão, MP3 padrão ou MP3 de alta qualidade.');
+  if (quality === 'lossless' && guide.durationSeconds > LOSSLESS_GUIDE_MAX_SECONDS) reject(400, 'lossless_guide_too_long', 'Para áudio sem compressão, use uma interpretação guia de até 80 segundos ou selecione MP3 compacto. Nenhuma geração foi solicitada.');
   const removeBackgroundNoise = form.get('removeBackgroundNoise') ?? 'false';
   if (!['true', 'false'].includes(removeBackgroundNoise)) reject(400, 'invalid_noise_option', 'Escolha uma opção válida para remover o ruído do guia.');
   const payload = new FormData();
   payload.append('audio', new Blob([bytes], { type: 'audio/wav' }), 'guide.wav');
   payload.append('model_id', VOICE_CHANGE_MODEL); payload.append('file_format', 'other');
   payload.append('remove_background_noise', removeBackgroundNoise);
-  return { voiceId, format: quality === 'high' ? 'mp3_44100_192' : 'mp3_44100_128', payload, durationSeconds: guide.durationSeconds };
+  return { voiceId, ...speechFormats[quality], payload, durationSeconds: guide.durationSeconds };
 }
 
 function requireLocalRequest(req, port) {
@@ -136,11 +138,15 @@ function speechPayload(body, defaultVoiceId) {
   const speed = body.speed === undefined ? 1 : body.speed;
   if (typeof speed !== 'number' || !Number.isFinite(speed)) reject(400, 'invalid_speed', 'Informe uma velocidade válida.');
   if (speed !== 1) reject(400, 'speed_not_supported', 'Eleven v3 usa tags como [slowly] e [rushed] para dirigir o ritmo. O controle numérico de velocidade não é suportado.');
-  if (body.quality !== undefined && !['standard', 'high'].includes(body.quality)) reject(400, 'invalid_quality', 'Escolha a qualidade padrão ou alta.');
+  const quality = body.quality === undefined ? 'lossless' : body.quality;
+  if (typeof quality !== 'string' || !Object.hasOwn(speechFormats, quality)) reject(400, 'invalid_quality', 'Escolha áudio sem compressão, MP3 padrão ou MP3 de alta qualidade.');
+  if (quality === 'lossless' && body.text.length > LOSSLESS_MAX_CHARS) reject(400, 'lossless_text_too_long', 'Áudio sem compressão aceita até 1.200 caracteres. Preserve o roteiro inteiro escolhendo MP3 compacto ou reduza o texto. Nenhuma geração foi solicitada.');
   return {
     voiceId,
-    format: body.quality === 'high' ? 'mp3_44100_192' : 'mp3_44100_128',
-    payload: { text: body.text, model_id: MODEL, language_code: 'pt', voice_settings: { stability: STABILITY[mood] } },
+    ...speechFormats[quality],
+    // The approved script, punctuation, whitespace and intentional audio tags
+    // are sent unchanged. The provider handles numbers/pronunciation normally.
+    payload: { text: body.text, model_id: MODEL, language_code: 'pt', apply_text_normalization: 'auto', voice_settings: { stability: STABILITY[mood] } },
   };
 }
 
@@ -233,7 +239,7 @@ export function createAudioHandler({ env = process.env, fetchImpl = globalThis.f
   let active = 0;
 
   const requireKey = () => { if (!apiKey) reject(503, 'provider_not_configured', 'Configure ELEVENLABS_API_KEY no servidor para usar a geração real.'); };
-  const upstream = async (path, { method = 'GET', body, asJson = false, usage } = {}) => {
+  const upstream = async (path, { method = 'GET', body, asJson = false, usage, audioFormat = 'mp3' } = {}) => {
     requireKey();
     if (active >= Math.max(1, Math.min(maxConcurrency, 2))) reject(429, 'concurrency_limit', 'Já existem duas solicitações em andamento. Aguarde a conclusão.');
     active += 1;
@@ -243,15 +249,23 @@ export function createAudioHandler({ env = process.env, fetchImpl = globalThis.f
     try {
       if (usage) lease = await access.reserve(usage.userId, usage.operation, usage.units);
       const multipart = body instanceof FormData;
-      const response = await fetchImpl(API_BASE + path, { method, headers: { 'xi-api-key': apiKey, Accept: asJson ? 'application/json' : 'audio/mpeg', ...(body && !multipart ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body: multipart ? body : JSON.stringify(body) } : {}), signal: controller.signal, redirect: 'error' });
+      const pcm = audioFormat === 'pcm_24000';
+      const response = await fetchImpl(API_BASE + path, { method, headers: { 'xi-api-key': apiKey, Accept: asJson ? 'application/json' : pcm ? 'audio/pcm,application/octet-stream' : 'audio/mpeg', ...(body && !multipart ? { 'Content-Type': 'application/json' } : {}) }, ...(body ? { body: multipart ? body : JSON.stringify(body) } : {}), signal: controller.signal, redirect: 'error' });
       if (!response.ok) await providerError(response);
       if (asJson) return await response.json();
-      if (Number(response.headers.get('content-length')) > MAX_AUDIO_BYTES) reject(502, 'invalid_provider_response', 'O áudio recebido é grande demais.');
       const contentType = response.headers.get('content-type') || '';
-      if (contentType && !/^(audio\/(mpeg|mp3)|application\/octet-stream)/i.test(contentType)) reject(502, 'invalid_provider_response', 'A ElevenLabs não devolveu um arquivo de áudio válido.');
-      const bytes = Buffer.from(await response.arrayBuffer());
+      const supportedType = pcm ? /^(audio\/(pcm|x-pcm)|application\/octet-stream)(?:\s*;|$)/i : /^(audio\/(mpeg|mp3)|application\/octet-stream)(?:\s*;|$)/i;
+      if (contentType && !supportedType.test(contentType)) reject(502, 'invalid_provider_response', 'A ElevenLabs não devolveu um arquivo de áudio válido.');
+      let bytes;
+      try { bytes = await readBoundedAudioResponse(response, pcm ? LOSSLESS_MAX_BYTES - 44 : MAX_AUDIO_BYTES); }
+      catch (error) {
+        if (!(error instanceof AudioResponseLimitError)) throw error;
+        if (pcm) reject(502, 'lossless_audio_too_long', 'A voz sem compressão ultrapassou o tamanho permitido. Nenhum trecho foi cortado. Para preservar a fala inteira, selecione MP3 compacto em uma nova geração. Esta tentativa já pode ter consumido saldo do provedor.');
+        reject(502, 'invalid_provider_response', 'O áudio recebido é grande demais.');
+      }
       if (!bytes.length || bytes.length > MAX_AUDIO_BYTES) reject(502, 'invalid_provider_response', 'A ElevenLabs não devolveu um arquivo de áudio válido.');
-      try { detectAudioType(bytes, 'response.mp3'); } catch { reject(502, 'invalid_provider_response', 'A ElevenLabs não devolveu um arquivo MP3 válido.'); }
+      try { if (pcm) bytes = pcm24ToWav(bytes); else detectAudioType(bytes, 'response.mp3'); }
+      catch { reject(502, 'invalid_provider_response', pcm ? 'A ElevenLabs não devolveu PCM de 16 bits válido.' : 'A ElevenLabs não devolveu um arquivo MP3 válido.'); }
       outcome = 'succeeded';
       return bytes;
     } catch (error) {
@@ -311,7 +325,7 @@ export function createAudioHandler({ env = process.env, fetchImpl = globalThis.f
       const url = new URL(req.url, 'http://localhost');
       if (production && req.method === 'OPTIONS' && url.pathname.startsWith('/api/audio/')) { res.writeHead(204, { 'Cache-Control': 'no-store' }); res.end(); return; }
       if (url.pathname === '/api/audio/status' && req.method === 'GET') {
-        return json(res, 200, { configured: Boolean(apiKey), model: MODEL, soundModel: SOUND_MODEL, voiceChange: { model: VOICE_CHANGE_MODEL, configured: Boolean(apiKey), maxDurationSeconds: guideLimits.maxSeconds, maxBytes: guideLimits.maxBytes, inputFormats: ['wav'], ...(production ? { inputSampleRate: 16000, inputChannels: 1 } : {}), paid: true }, ...(access.required ? { authRequired: true, authConfigured: access.configured, usageConfigured: access.usageConfigured, cachePersistence: production ? 'ephemeral' : 'local', limits: { dailyGenerations: access.limits.daily, dailyProcessingUnits: access.limits.units } } : {}), ...(defaultVoiceId ? { defaultVoiceId } : {}) });
+        return json(res, 200, { configured: Boolean(apiKey), model: MODEL, soundModel: SOUND_MODEL, speech: { defaultQuality: 'lossless', losslessMaxChars: LOSSLESS_MAX_CHARS, losslessMaxBytes: LOSSLESS_MAX_BYTES, losslessFormat: 'pcm_24000', sampleRate: 24000, bitDepth: 16 }, voiceChange: { model: VOICE_CHANGE_MODEL, configured: Boolean(apiKey), maxDurationSeconds: guideLimits.maxSeconds, maxBytes: guideLimits.maxBytes, losslessMaxDurationSeconds: LOSSLESS_GUIDE_MAX_SECONDS, inputFormats: ['wav'], ...(production ? { inputSampleRate: 16000, inputChannels: 1 } : {}), paid: true }, ...(access.required ? { authRequired: true, authConfigured: access.configured, usageConfigured: access.usageConfigured, cachePersistence: production ? 'ephemeral' : 'local', limits: { dailyGenerations: access.limits.daily, dailyProcessingUnits: access.limits.units } } : {}), ...(defaultVoiceId ? { defaultVoiceId } : {}) });
       }
       const user = url.pathname.startsWith('/api/audio/') ? await access.authenticate(req) : null;
       if (url.pathname === '/api/audio/environments' && req.method === 'GET') {
@@ -339,6 +353,9 @@ export function createAudioHandler({ env = process.env, fetchImpl = globalThis.f
         if (!environment) reject(404, 'AMBIENCE_NOT_READY', 'Este ambiente ainda não está disponível para ouvir.');
         const asset = await readyAsset(environment, getAmbienceRecipe(environment));
         if (!asset) reject(404, 'AMBIENCE_NOT_READY', 'Este ambiente ainda não tem um áudio preparado. Gere um candidato ou registre uma gravação revisada.');
+        if (url.searchParams.get('metadata') === '1' && asset.source === 'recording' && asset.publicUrl) {
+          return json(res, 200, { publicUrl: asset.publicUrl, mimeType: asset.type, source: asset.source, reviewed: asset.reviewed, revision: asset.revision, provenance: asset.provenance });
+        }
         return sendBinary(res, asset.bytes, asset.type, asset);
       }
       if (url.pathname === '/api/audio/voices' && req.method === 'GET') {
@@ -355,13 +372,14 @@ export function createAudioHandler({ env = process.env, fetchImpl = globalThis.f
         return json(res, 200, voiceList(await upstream(`/v2/voices?${query}`, { asJson: true }), apiKey));
       }
       if (url.pathname === '/api/audio/speech' && req.method === 'POST') {
-        const { voiceId, format, payload } = speechPayload(await readJson(req), defaultVoiceId);
-        return sendBinary(res, await upstream(`/v1/text-to-speech/${encodeURIComponent(voiceId)}?output_format=${format}`, { method: 'POST', body: payload, usage: { userId: user?.id, operation: 'speech', units: payload.text.length } }));
+        const { voiceId, format, type, container, sampleRate, bitDepth, payload } = speechPayload(await readJson(req), defaultVoiceId);
+        const bytes = await upstream(`/v1/text-to-speech/${encodeURIComponent(voiceId)}?output_format=${format}`, { method: 'POST', body: payload, audioFormat: format, usage: { userId: user?.id, operation: 'speech', units: payload.text.length } });
+        return sendBinary(res, bytes, type, undefined, { 'X-Voice-Model': MODEL, 'X-Speech-Format': format, 'X-Speech-Container': container, 'X-Speech-Sample-Rate': String(sampleRate), ...(bitDepth ? { 'X-Speech-Bit-Depth': String(bitDepth) } : {}) });
       }
       if (url.pathname === '/api/audio/voice-change' && req.method === 'POST') {
         const request = await readVoiceGuide(req, defaultVoiceId, guideLimits);
-        const bytes = await upstream(`/v1/speech-to-speech/${encodeURIComponent(request.voiceId)}?output_format=${request.format}`, { method: 'POST', body: request.payload, usage: { userId: user?.id, operation: 'voice_change', units: Math.ceil(request.durationSeconds * 1000 / 60) } });
-        return sendBinary(res, bytes, 'audio/mpeg', undefined, { 'X-Voice-Model': VOICE_CHANGE_MODEL, 'X-Guide-Duration': String(request.durationSeconds) });
+        const bytes = await upstream(`/v1/speech-to-speech/${encodeURIComponent(request.voiceId)}?output_format=${request.format}`, { method: 'POST', body: request.payload, audioFormat: request.format, usage: { userId: user?.id, operation: 'voice_change', units: Math.ceil(request.durationSeconds * 1000 / 60) } });
+        return sendBinary(res, bytes, request.type, undefined, { 'X-Voice-Model': VOICE_CHANGE_MODEL, 'X-Guide-Duration': String(request.durationSeconds), 'X-Speech-Format': request.format, 'X-Speech-Container': request.container, 'X-Speech-Sample-Rate': String(request.sampleRate), ...(request.bitDepth ? { 'X-Speech-Bit-Depth': String(request.bitDepth) } : {}) });
       }
       if (url.pathname === '/api/audio/ambience' && req.method === 'POST') {
         const body = await readJson(req); onlyFields(body, ['environment']);

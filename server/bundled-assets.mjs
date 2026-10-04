@@ -43,7 +43,7 @@ export function createBundledAssets({ manifestPath = DEFAULT_BUNDLE_MANIFEST, pu
             if (!validIrMetadata(entry.acoustic, wav.durationSeconds)) continue;
             metadata = { id: entry.id, environment, kind: 'ir', reviewed: false, source: 'recording', revision: entry.sha256, mimeType: type, durationSeconds: wav.durationSeconds, license: entry.license, acoustic: entry.acoustic, provenance };
           }
-          return { bytes, type, source: 'recording', reviewed: false, revision: entry.sha256, provenance, ...(metadata ? { metadata } : {}) };
+          return { bytes, type, source: 'recording', reviewed: false, revision: entry.sha256, provenance, ...(kind === 'bed' ? { publicUrl: `/${entry.file}` } : {}), ...(metadata ? { metadata } : {}) };
         } catch { /* Another intact candidate can replace a missing or invalid file. */ }
       }
     } catch { /* Missing manifests are unavailable, never generated automatically. */ }

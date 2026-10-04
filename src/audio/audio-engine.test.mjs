@@ -25,7 +25,7 @@ const sandbox = {
   exports, Blob, AudioBuffer: PCMBuffer, Float32Array, ArrayBuffer, DataView,
   require: () => ({ getEnvironment: id => environments.find(environment => environment.id === id) || environments[0] }),
 };
-vm.runInNewContext(`${compiled}\nObject.assign(exports, { testLoop: makeLoopBuffer, testImpulse: makeImpulse, testRoom: roomSettings, testVoiceGain: voiceCalibration, testBedGain: ambienceCalibration, testTiming: mixTiming, testOffset: stableLoopOffset, testPhase: advancePhase, testSanitize: sanitizedBuffer, testBackgroundPlan: backgroundPlan, testImportedImpulse: prepareImportedImpulse, testImportedRoom: importedRoom, testDistance: effectiveDistance, testCapture: captureSettings, testEvents: validateEventResources, testSceneDucking: sceneDucking, testScheduleDucking: scheduleDucking });`, sandbox);
+vm.runInNewContext(`${compiled}\nObject.assign(exports, { testLoop: makeLoopBuffer, testImpulse: makeImpulse, testRoom: roomSettings, testVoiceGain: voiceCalibration, testBedGain: ambienceCalibration, testTiming: mixTiming, testOffset: stableLoopOffset, testPhase: advancePhase, testSanitize: sanitizedBuffer, testBackgroundPlan: backgroundPlan, testImportedImpulse: prepareImportedImpulse, testImportedRoom: importedRoom, testDistance: effectiveDistance, testCapture: captureSettings, testEvents: validateEventResources, testSceneDucking: sceneDucking, testScheduleDucking: scheduleDucking, testDirectVoice: directVoiceSettings, testHeadroom: attenuateToHeadroom });`, sandbox);
 
 const speech = new Float32Array(1500);
 for (let i = 200; i < 600; i++) speech[i] = Math.sin(i * Math.PI * 2 * 0.07) * 0.8;
@@ -298,9 +298,146 @@ test('imported IR removes declared direct sound before resampling and preserves 
   const maximum = Math.max(...processed.getChannelData(0));
   assert.equal(processed.getChannelData(0)[40 * 48], maximum);
   const energy = processed.getChannelData(0).reduce((sum, value) => sum + value * value, 0);
-  assert.ok(Math.abs(energy - 0.16) < 1e-7);
+  assert.ok(energy > 0 && energy <= 0.1600001, 'Energy is a ceiling, not mandatory makeup gain for a colored IR.');
+  assert.ok(exports.analyzeImpulseResponse(processed).peakSpeechBandGain <= 1.500001);
   assert.equal(raw.getChannelData(0)[20], 1, 'The imported original is retained unchanged.');
   assert.equal(exports.testImportedImpulse(bufferFactory, metadata), processed, 'Identical metadata reuses the small IR PCM.');
+});
+
+test('parallel room processing preserves a neutral direct voice at natural and close perspectives', () => {
+  for (const perspective of ['close', 'natural', undefined]) for (const distance of [0, 20, 50, 100]) {
+    const direct = exports.testDirectVoice({ distance, perspective });
+    assert.equal(direct.highShelfDb, 0, 'Room tone must not filter or muffle direct speech.');
+    assert.ok(direct.gain >= 0.82 && direct.gain <= 1, 'Distance changes level by at most 1.73 dB.');
+  }
+  const distant = exports.testDirectVoice({ distance: 100, perspective: 'distant' });
+  assert.ok(distant.highShelfDb >= -1.25 && distant.highShelfDb <= 0);
+});
+
+test('IR frequency analysis agrees with direct DFT and a single delayed tap', () => {
+  const impulse = new PCMBuffer({ numberOfChannels: 1, length: 960, sampleRate: 48000 });
+  impulse.getChannelData(0)[37] = 0.4;
+  const flat = exports.analyzeImpulseResponse(impulse);
+  assert.ok(Math.abs(flat.energyPerChannel - 0.16) < 1e-7);
+  assert.ok(Math.abs(flat.peakSpeechBandGain - 0.4) < 1e-7);
+  assert.ok(Math.abs(flat.speechBandRmsGain - 0.4) < 1e-7);
+  assert.ok(Math.abs(flat.dcGain - 0.4) < 1e-7);
+  impulse.getChannelData(0)[103] = 0.25;
+  const response = exports.analyzeImpulseResponse(impulse);
+  const frequency = response.peakSpeechBandFrequency;
+  const re = 0.4 * Math.cos(2 * Math.PI * frequency * 37 / 48000) + 0.25 * Math.cos(2 * Math.PI * frequency * 103 / 48000);
+  const im = -0.4 * Math.sin(2 * Math.PI * frequency * 37 / 48000) - 0.25 * Math.sin(2 * Math.PI * frequency * 103 / 48000);
+  assert.ok(Math.abs(response.peakSpeechBandGain - Math.hypot(re, im)) < 1e-7, 'FFT and independent direct DFT must agree.');
+});
+
+test('a tonal imported IR cannot be boosted until its resonance dominates speech', () => {
+  const ringing = makeTone({ duration: 0.3, sampleRate: 48000, frequency: 1000, amplitude: 0.1 });
+  const input = ringing.getChannelData(0);
+  for (let i = 0; i < input.length; i++) input[i] *= Math.exp(-i / 2400);
+  const processed = exports.testImportedImpulse(bufferFactory, { buffer: ringing, directSound: 'removed', predelayMode: 'embedded', wet: 0.14 });
+  const response = exports.analyzeImpulseResponse(processed);
+  assert.ok(response.energyPerChannel < 0.01, 'A narrow resonance must not be forced to broadband target energy.');
+  assert.ok(response.peakSpeechBandGain <= 1.500001);
+  assert.ok(response.peakSpeechBandFrequency > 980 && response.peakSpeechBandFrequency < 1020);
+  assert.ok(Math.sin(0.14 * Math.PI / 2) * response.peakSpeechBandGain < 0.328, 'Worst sampled resonance remains below the direct speech branch.');
+  assert.equal(processed.duration, ringing.duration, 'Calibrating the IR never changes its original timing.');
+});
+
+test('water beds use subtle ducking and an isolated click does not change later phrase detection', () => {
+  const shower = exports.testSceneDucking(environment('shower'));
+  assert.equal(shower.depthDb, 3);
+  assert.equal(shower.releaseMs, 650);
+  assert.ok(shower.attackMs >= 30 && shower.holdMs >= 100);
+  const speech = new Float32Array(48000 * 2);
+  for (let i = 16000; i < 68000; i++) speech[i] = 0.008 * Math.sin(i * 2 * Math.PI * 700 / 48000);
+  const clean = exports.buildDuckingEnvelope([speech], 48000, shower);
+  const clicked = speech.slice(); clicked[2000] = 4;
+  const withClick = exports.buildDuckingEnvelope([clicked], 48000, shower);
+  const at = (points, time) => points.find(point => point.time >= time).gain;
+  assert.ok(Math.abs(at(clean, 0.8) - at(withClick, 0.8)) < 0.005, 'A single loud click cannot hide quieter speech.');
+  assert.ok(withClick.every(point => point.gain >= dbGain(-3) && point.gain <= 1));
+  const clickOnly = new Float32Array(48000); clickOnly[12000] = 4;
+  assert.ok(exports.buildDuckingEnvelope([clickOnly], 48000, shower).every(point => point.gain > 0.999));
+  assert.ok(at(clean, 1.75) > at(clean, 1.45), 'The bed returns gradually instead of disappearing between words.');
+});
+
+test('all 37 scene profiles retain bounded room energy, coherent quiet modes and complete tails', () => {
+  assert.equal(environments.length, 37);
+  let maxWet = 0, maxResponse = 0, maxEnergy = 0;
+  for (const scene of environments) {
+    const room = exports.testRoom(scene, { distance: 20, spatial: true, perspective: 'natural' });
+    const ir = exports.testImpulse(bufferFactory, scene, room);
+    const analysis = exports.analyzeAudio(ir);
+    const response = exports.analyzeImpulseResponse(ir);
+    assert.equal(analysis.nonFiniteSamples, 0, scene.id);
+    assert.equal(analysis.clippedSamples, 0, scene.id);
+    assert.ok(response.energyPerChannel <= 0.18, `${scene.id}: bounded synthetic reflection energy`);
+    assert.ok(response.peakSpeechBandGain <= 1.6, `${scene.id}: no strong synthetic speech-band resonance`);
+    assert.ok(room.wet <= 0.32, `${scene.id}: restrained normal perspective`);
+    const timing = exports.testTiming(300, room, 1);
+    assert.ok(timing.duration > 300 && timing.duration < 305, `${scene.id}: complete voice and tail`);
+    if (scene.sound.mode === 'silent') assert.equal(exports.testBedGain({ activeRms: 0.12 }, { activeRms: 0.1, rms: 0.1, silent: false }, scene, 100), 0, scene.id);
+    if (scene.acoustic.kind === 'open' || scene.acoustic.kind === 'dry') assert.equal(room.wet, 0, scene.id);
+    maxWet = Math.max(maxWet, room.wet); maxResponse = Math.max(maxResponse, response.peakSpeechBandGain); maxEnergy = Math.max(maxEnergy, response.energyPerChannel);
+  }
+  console.log(JSON.stringify({ sceneProfiles: 37, maxWetAtDistance20: maxWet, maxSyntheticIRSpeechGain: maxResponse, maxSyntheticIREnergy: maxEnergy, metric: 'linear response and sample-domain tests, not subjective realism' }));
+});
+
+test('bundled room IR files keep their timing and have bounded response after calibration', () => {
+  const root = new URL('../../public/audio/impulses/', import.meta.url);
+  const files = fs.readdirSync(root).filter(name => name.endsWith('.wav'));
+  assert.ok(files.length >= 4, 'The existing room IR assets should remain available.');
+  const metrics = [];
+  for (const file of files) {
+    const bytes = fs.readFileSync(new URL(file, root));
+    assert.equal(bytes.toString('ascii', 0, 4), 'RIFF');
+    assert.equal(bytes.toString('ascii', 8, 12), 'WAVE');
+    let fmt, data;
+    for (let position = 12; position + 8 <= bytes.length;) {
+      const size = bytes.readUInt32LE(position + 4);
+      const tag = bytes.toString('ascii', position, position + 4);
+      if (tag === 'fmt ') fmt = position + 8;
+      if (tag === 'data') data = { offset: position + 8, size };
+      position += 8 + size + size % 2;
+    }
+    assert.ok(fmt && data, file);
+    const channels = bytes.readUInt16LE(fmt + 2), sampleRate = bytes.readUInt32LE(fmt + 4), bits = bytes.readUInt16LE(fmt + 14);
+    const codec = bytes.readUInt16LE(fmt) === 0xfffe ? bytes.readUInt16LE(fmt + 24) : bytes.readUInt16LE(fmt);
+    assert.ok(codec === 1 || codec === 3, `${file}: PCM/float fixture required`);
+    const source = new PCMBuffer({ numberOfChannels: channels, length: data.size / (bits / 8) / channels, sampleRate });
+    for (let channel = 0; channel < channels; channel++) {
+      const target = source.getChannelData(channel);
+      for (let i = 0; i < target.length; i++) {
+        const offset = data.offset + (i * channels + channel) * bits / 8;
+        target[i] = codec === 3 ? bits === 64 ? bytes.readDoubleLE(offset) : bytes.readFloatLE(offset)
+          : bits === 16 ? bytes.readInt16LE(offset) / 32768 : bits === 24 ? bytes.readIntLE(offset, 3) / 8388608 : bits === 32 ? bytes.readInt32LE(offset) / 2147483648 : (bytes.readUInt8(offset) - 128) / 128;
+      }
+    }
+    const processed = exports.testImportedImpulse(bufferFactory, { buffer: source, directSound: 'included', directArrivalMs: 0, directWindowMs: 5, predelayMode: 'embedded' });
+    const response = exports.analyzeImpulseResponse(processed);
+    assert.ok(Math.abs(processed.duration - source.duration) < 1 / 48000 + 1e-9, file);
+    assert.equal(exports.analyzeAudio(processed).nonFiniteSamples, 0, file);
+    assert.ok(response.energyPerChannel > 0 && response.energyPerChannel <= 0.1600001, file);
+    assert.ok(response.peakSpeechBandGain <= 1.500001, `${file}: spectral guard`);
+    metrics.push({ file, duration: Number(processed.duration.toFixed(4)), energy: Number(response.energyPerChannel.toFixed(5)), speechBandRmsGain: Number(response.speechBandRmsGain.toFixed(4)), peakSpeechBandGain: Number(response.peakSpeechBandGain.toFixed(4)) });
+  }
+  console.log(JSON.stringify({ calibratedBundledIR: metrics, directWindowFixtureMs: 5, note: 'technical fixture metadata, not proof of direct-arrival measurement or listening approval' }));
+});
+
+test('sample headroom attenuates only and preserves every channel, dynamic ratio and final sample', () => {
+  const loud = new PCMBuffer({ numberOfChannels: 2, length: 4, sampleRate: 48000 });
+  loud.getChannelData(0).set([0.5, 2, -1, 0.1]); loud.getChannelData(1).set([0.25, -1, 0.75, -0.2]);
+  exports.testHeadroom(loud);
+  const measurement = exports.analyzeAudio(loud);
+  assert.ok(measurement.peak <= dbGain(-1));
+  assert.equal(measurement.nonFiniteSamples, 0);
+  assert.equal(measurement.clippedSamples, 0);
+  const scale = loud.getChannelData(0)[1] / 2;
+  assert.ok(Math.abs(loud.getChannelData(1)[3] / -0.2 - scale) < 1e-7);
+  assert.ok(Math.abs(loud.getChannelData(0)[0] / loud.getChannelData(0)[1] - 0.25) < 1e-7);
+  const quiet = makeTone({ amplitude: 0.01 }); const previous = quiet.getChannelData(0).slice();
+  exports.testHeadroom(quiet);
+  assert.deepEqual(quiet.getChannelData(0), previous, 'Quiet speech is never turned up by the final protection stage.');
 });
 
 test('IR embedded and external predelay have one explicit timing convention', () => {

@@ -1,0 +1,13 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFile} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
+import ts from 'typescript';
+const source=await readFile(new URL('./static-ambience.ts',import.meta.url),'utf8');
+const compiled=ts.transpileModule(source,{compilerOptions:{module:ts.ModuleKind.ESNext,target:ts.ScriptTarget.ES2022}}).outputText;
+const {validateStaticAmbience,downloadStaticAmbience}=await import('data:text/javascript;base64,'+Buffer.from(compiled).toString('base64'));
+const bytes=Buffer.from('fLaC-fixture'),metadata={publicUrl:'/audio/ambiences/forest.flac',mimeType:'audio/flac',source:'recording',reviewed:false,revision:createHash('sha256').update(bytes).digest('hex')};
+test('public static recordings preserve bytes and hash without sending credentials',async()=>{let call;const asset=await downloadStaticAmbience(metadata,undefined,async(url,options)=>{call={url,options};return new Response(bytes);});assert.equal(call.url,metadata.publicUrl);assert.equal(call.options.credentials,'omit');assert.equal(call.options.redirect,'error');assert.equal(call.options.headers,undefined);assert.equal(asset.blob.type,'audio/flac');assert.deepEqual(Buffer.from(await asset.blob.arrayBuffer()),bytes);assert.equal(asset.revision,metadata.revision);assert.equal(asset.reviewed,false);});
+test('static metadata cannot redirect auth or fetch unrelated private paths',()=>{for(const publicUrl of ['https://other.test/recording.flac','//other.test/a.flac','/api/audio/speech','/audio/ambiences/../private.flac','/audio/ambiences/forest.flac?token=x','/audio/ambiences/forest.flac#x'])assert.throws(()=>validateStaticAmbience({...metadata,publicUrl}),/validada/);for(const patch of [{reviewed:true},{source:'library'},{mimeType:'text/html'},{revision:'x'}])assert.throws(()=>validateStaticAmbience({...metadata,...patch}),/validada/);});
+test('stale or damaged CDN bytes fail without retry or paid fallback',async()=>{let calls=0;await assert.rejects(()=>downloadStaticAmbience(metadata,undefined,async()=>{calls++;return new Response('damaged');}),/validada/);assert.equal(calls,1);});
+test('missing and oversized static responses fail before decoding',async()=>{await assert.rejects(()=>downloadStaticAmbience(metadata,undefined,async()=>new Response('',{status:404})),/validada/);await assert.rejects(()=>downloadStaticAmbience(metadata,undefined,async()=>new Response(bytes,{headers:{'Content-Length':String(65*1024*1024)}})),/validada/);});

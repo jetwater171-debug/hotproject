@@ -30,7 +30,7 @@ export interface MixImpulseResponse {
    * to zero, then applies only predelayMs. No scene predelay is added. */
   predelayMode: 'embedded' | 'external';
   predelayMs?: number;
-  /** Equal-power wet proportion, not the file's gain; default .18. */
+  /** Room send amount; the direct voice stays intact. Default .18. */
   wet?: number;
 }
 export interface AmbientEvent { id: string; buffer: AudioBuffer; at: number; volume?: number; pan?: number; relativeDb?: number }
@@ -54,6 +54,14 @@ export interface AudioAnalysis extends AudioMeasurement {
 }
 export interface DuckingPoint { time: number; gain: number }
 export interface AudioPlayer { stop(): void }
+/** Linear IR diagnostics, not a room measurement or perceptual quality score. */
+export interface ImpulseResponseAnalysis {
+  energyPerChannel: number;
+  speechBandRmsGain: number;
+  peakSpeechBandGain: number;
+  peakSpeechBandFrequency: number;
+  dcGain: number;
+}
 
 const SAMPLE_RATE = 48_000;
 const MAX_DURATION = 300;
@@ -301,6 +309,8 @@ function resolveDucking(profile: DuckingProfile = {}): Required<DuckingProfile> 
 }
 
 function sceneDucking(environment: EngineEnvironment, override?: DuckingProfile): Required<DuckingProfile> {
+  const water = /shower|rain|river|beach/.test(environment.id) || /rain|waves|river/.test(String(environment.synth));
+  if (water) return resolveDucking({ depthDb: 3, attackMs: 45, holdMs: 140, releaseMs: 650, ...override });
   const gentle = environment.category === 'transport' || /rain|wind|waves|river/.test(String(environment.synth));
   return resolveDucking({ depthDb: gentle ? 3.5 : 5, releaseMs: gentle ? 500 : 400, ...override });
 }
@@ -328,22 +338,31 @@ export function buildDuckingEnvelope(channels: readonly Float32Array[], sampleRa
     }
   }
   const levels: { time: number; rms: number }[] = [];
-  let maxRms = 0;
   for (let window = 0; window < count; window++) {
     const start = window * hop;
     const end = Math.min(length, start + hop * 2);
     const power = powers[window] + (powers[window + 1] || 0);
     const rms = Math.sqrt(power / Math.max(1, (end - start) * channels.length));
-    maxRms = Math.max(maxRms, rms);
     levels.push({ time: start / sampleRate, rms });
   }
-  if (maxRms < 0.00001) return [{ time: 0, gain: 1 }, { time: length / sampleRate, gain: 1 }];
-  const threshold = Math.max(0.00001, maxRms * 0.1);
+  // A single click occupies at most two overlapping detector windows. A short
+  // median removes it without allocating another full PCM stem. The percentile
+  // reference also prevents a lone plosive from hiding quieter later phrases.
+  const detected = levels.map((level, index) => {
+    const neighbors = [-2, -1, 0, 1, 2].map(offset => levels[index + offset]?.rms || 0).sort((a, b) => a - b);
+    return { time: level.time, rms: neighbors[2] };
+  });
+  // Reference the untrimmed detector windows: otherwise a removed impulse's
+  // tiny filter decay could become the new "speech" reference all by itself.
+  const activeLevels = levels.map(level => level.rms).filter(rms => rms > 0.00001).sort((a, b) => a - b);
+  if (!activeLevels.length) return [{ time: 0, gain: 1 }, { time: length / sampleRate, gain: 1 }];
+  const reference = activeLevels[Math.floor((activeLevels.length - 1) * 0.85)];
+  const threshold = Math.max(0.00001, reference * 0.1);
   let gain = 1;
   let holdUntil = 0;
   let heldActivity = 0;
   const points: DuckingPoint[] = [{ time: 0, gain: 1 }];
-  for (const level of levels) {
+  for (const level of detected) {
     let activity = clamp((level.rms - threshold) / (threshold * 4), 0, 1);
     if (activity > 0.15) { heldActivity = activity; holdUntil = level.time + dynamics.holdMs / 1000; }
     else if (level.time < holdUntil) activity = Math.max(activity, heldActivity);
@@ -436,18 +455,24 @@ function roomSettings(environment: EngineEnvironment, options: Pick<MixOptions, 
     decay: Math.max(clamp(acoustic.decay, 0.08, 4), lastReflection + 0.03),
     predelay: kind === 'dry' || kind === 'open' || kind === 'reflective-outdoor' ? 0 : clamp(acoustic.predelay, 0, 0.2) + distance * 0.008,
     lowpass: clamp(acoustic.lowpass * (1 - distance * 0.25), 4_500, 22_000),
-    highpass: clamp(acoustic.highpass, 15, 350),
+    // These filters belong only to the room send, never to the direct voice.
+    highpass: clamp(Math.max(acoustic.highpass, kind === 'small-hard' ? 110 : 70), 15, 350),
   };
+}
+
+function directVoiceSettings(options: Pick<MixOptions, 'distance' | 'perspective'>): { gain: number; highShelfDb: number } {
+  const distance = effectiveDistance(options);
+  return { gain: 1 - distance * 0.18, highShelfDb: options.perspective === 'distant' ? -1.25 * distance : 0 };
 }
 
 function makeImpulse(context: Pick<OfflineAudioContext, 'createBuffer'>, environment: EngineEnvironment, room: RoomSettings): AudioBuffer {
   const seconds = room.decay;
   const length = Math.ceil(seconds * SAMPLE_RATE);
-  const key = JSON.stringify([environment.id, environment.sound?.version || 1, room.kind, room.decay, room.earlyReflections]);
+  const key = JSON.stringify(['speech-room-v3', environment.id, environment.sound?.version || 1, room.kind, room.decay, room.earlyReflections]);
   const cached = impulseCache.get(key);
   if (cached) { impulseCache.delete(key); impulseCache.set(key, cached); return cached; }
   const impulse = context.createBuffer(2, length, SAMPLE_RATE);
-  const lateEnergy = room.kind === 'small-hard' ? 0.08 : room.kind === 'large' ? 0.1 : room.kind === 'vehicle' ? 0.025 : room.kind === 'open' || room.kind === 'reflective-outdoor' || room.kind === 'dry' ? 0 : 0.03;
+  const lateEnergy = room.kind === 'small-hard' ? 0.028 : room.kind === 'large' ? 0.05 : room.kind === 'vehicle' ? 0.012 : room.kind === 'open' || room.kind === 'reflective-outdoor' || room.kind === 'dry' ? 0 : 0.018;
   const lateStart = Math.max(0.008, Math.min(0.04, room.earlyReflections.reduce((maximum, reflection) => Math.max(maximum, reflection.delayMs / 1000), 0) * 0.45));
   const sharedSeed = seedFromString(`${environment.id}:diffuse:v2`);
   for (let channel = 0; channel < 2; channel++) {
@@ -462,20 +487,33 @@ function makeImpulse(context: Pick<OfflineAudioContext, 'createBuffer'>, environ
     let energy = 0;
     if (lateEnergy > 0) for (let i = 0; i < length; i++) {
       const time = i / SAMPLE_RATE;
-      const white = (sharedRandom() * 2 - 1) * 0.75 + (random() * 2 - 1) * 0.25;
+      const white = (sharedRandom() * 2 - 1) * 0.6 + (random() * 2 - 1) * 0.4;
       low += lowAlpha * (white - low);
       middle += middleAlpha * (white - middle);
       if (time < lateStart) continue;
       const diffuseTime = time - lateStart;
       const density = 1 - Math.exp(-diffuseTime / 0.025);
       const tailFade = Math.min(1, (seconds - time) / 0.025);
-      data[i] = density * tailFade * (low * 0.5 * Math.exp(-6.9 * diffuseTime / (seconds * 1.05)) + (middle - low) * 0.4 * Math.exp(-6.9 * diffuseTime / seconds) + (white - middle) * 0.1 * Math.exp(-6.9 * diffuseTime / (seconds * highDecay)));
+      data[i] = density * tailFade * (low * 0.18 * Math.exp(-6.9 * diffuseTime / seconds) + (middle - low) * 0.57 * Math.exp(-6.9 * diffuseTime / (seconds * 0.9)) + (white - middle) * 0.25 * Math.exp(-6.9 * diffuseTime / (seconds * highDecay)));
       energy += data[i] * data[i];
     }
     // Only the diffuse component is energy-controlled. Configured reflection
     // gains retain their meaning instead of being normalized to one generic IR.
     const factor = energy > 0 ? Math.sqrt(lateEnergy / energy) : 1;
     for (let i = 0; i < length; i++) data[i] *= factor;
+  }
+  // The fallback is deliberately synthetic. Bound resonant frequency response
+  // before adding the declared early taps, rather than changing their gains.
+  if (lateEnergy > 0) {
+    const response = analyzeImpulseResponse(impulse);
+    const factor = Math.min(1, 1 / Math.max(1e-12, response.peakSpeechBandGain));
+    if (factor < 1) for (let channel = 0; channel < 2; channel++) {
+      const data = impulse.getChannelData(channel);
+      for (let i = 0; i < data.length; i++) data[i] *= factor;
+    }
+  }
+  for (let channel = 0; channel < 2; channel++) {
+    const data = impulse.getChannelData(channel);
     for (const reflection of room.earlyReflections) {
       const position = Math.round(clamp(reflection.delayMs, 0, 250) / 1000 * SAMPLE_RATE);
       const pan = clamp(reflection.pan, -0.8, 0.8);
@@ -539,6 +577,69 @@ function backgroundPlan(voice: AudioBuffer, ambience: AudioBuffer, environment: 
   return { loop: true, offset: 0, stop: renderDuration };
 }
 
+/** A zero-padded FFT of a short IR. This is a sampled linear frequency response,
+ * not a true-peak meter or a physical measurement of the selected room. */
+export function analyzeImpulseResponse(buffer: AudioBuffer): ImpulseResponseAnalysis {
+  validateBuffer(buffer, MAX_IR_DURATION);
+  if (buffer.numberOfChannels > 2) throw new Error('A resposta de sala deve ser mono ou estéreo.');
+  const size = 2 ** Math.ceil(Math.log2(Math.max(16, buffer.length * 2)));
+  if (size > 2 ** 21) throw new Error('A resposta de sala tem amostras demais. Exporte a IR em 48 kHz.');
+  const lowerBin = Math.max(1, Math.ceil(80 / buffer.sampleRate * size));
+  const upperBin = Math.min(size / 2 - 1, Math.floor(Math.min(9_000, buffer.sampleRate * 0.475) / buffer.sampleRate * size));
+  let energy = 0;
+  let bandPower = 0;
+  let bandBins = 0;
+  let peakSpeechBandGain = 0;
+  let peakSpeechBandFrequency = 0;
+  let dcGain = 0;
+  for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+    const real = new Float64Array(size);
+    const imaginary = new Float64Array(size);
+    const input = buffer.getChannelData(channel);
+    let dc = 0;
+    for (let i = 0; i < input.length; i++) {
+      const sample = clamp(finiteSample(input[i]), -4, 4);
+      real[i] = sample; energy += sample * sample; dc += sample;
+    }
+    dcGain = Math.max(dcGain, Math.abs(dc));
+    for (let i = 1, reversed = 0; i < size; i++) {
+      let bit = size >> 1;
+      for (; reversed & bit; bit >>= 1) reversed ^= bit;
+      reversed ^= bit;
+      if (i < reversed) { const temporary = real[i]; real[i] = real[reversed]; real[reversed] = temporary; }
+    }
+    for (let width = 2; width <= size; width *= 2) {
+      const angle = -2 * Math.PI / width;
+      const stepReal = Math.cos(angle);
+      const stepImaginary = Math.sin(angle);
+      for (let start = 0; start < size; start += width) {
+        let twiddleReal = 1;
+        let twiddleImaginary = 0;
+        for (let offset = 0; offset < width / 2; offset++) {
+          const left = start + offset;
+          const right = left + width / 2;
+          const transformedReal = real[right] * twiddleReal - imaginary[right] * twiddleImaginary;
+          const transformedImaginary = real[right] * twiddleImaginary + imaginary[right] * twiddleReal;
+          real[right] = real[left] - transformedReal; imaginary[right] = imaginary[left] - transformedImaginary;
+          real[left] += transformedReal; imaginary[left] += transformedImaginary;
+          const nextReal = twiddleReal * stepReal - twiddleImaginary * stepImaginary;
+          twiddleImaginary = twiddleReal * stepImaginary + twiddleImaginary * stepReal;
+          twiddleReal = nextReal;
+        }
+      }
+    }
+    for (let bin = lowerBin; bin <= upperBin; bin++) {
+      const power = real[bin] ** 2 + imaginary[bin] ** 2;
+      bandPower += power; bandBins++;
+      if (power > peakSpeechBandGain ** 2) {
+        peakSpeechBandGain = Math.sqrt(power);
+        peakSpeechBandFrequency = bin * buffer.sampleRate / size;
+      }
+    }
+  }
+  return { energyPerChannel: energy / buffer.numberOfChannels, speechBandRmsGain: Math.sqrt(bandPower / Math.max(1, bandBins)), peakSpeechBandGain, peakSpeechBandFrequency, dcGain };
+}
+
 function prepareImportedImpulse(context: Pick<OfflineAudioContext, 'createBuffer'>, resource: MixImpulseResponse): AudioBuffer {
   validateBuffer(resource.buffer, MAX_IR_DURATION);
   if (resource.buffer.numberOfChannels > 2) throw new Error('A resposta de sala deve ser mono ou estéreo.');
@@ -578,9 +679,13 @@ function prepareImportedImpulse(context: Pick<OfflineAudioContext, 'createBuffer
   }
   const perChannelEnergy = energy / original.numberOfChannels;
   if (perChannelEnergy < 1e-12) throw new Error('A resposta de sala ficou sem reflexos audíveis. Confira a janela de som direto ou importe outra IR.');
-  // Energy calibration makes wet predictable. It is neither loudness matching
-  // nor evidence that an imported file is a measured impulse response.
-  const gain = clamp(Math.sqrt(0.16 / perChannelEnergy), 0.000001, 32);
+  // Constant energy alone can amplify a ringing/tonal IR. Keep its declared
+  // shape and timing, but limit broadband energy and speech-band response.
+  // Leave a small margin for peaks between FFT bins. Never fill in a quiet tail.
+  const response = analyzeImpulseResponse(impulse);
+  const energyGain = Math.sqrt(0.16 / perChannelEnergy);
+  const spectralGain = 1.5 / Math.max(1e-12, response.peakSpeechBandGain);
+  const gain = clamp(Math.min(energyGain, spectralGain), 0.000001, 32);
   for (let channel = 0; channel < impulse.numberOfChannels; channel++) {
     const output = impulse.getChannelData(channel);
     for (let i = 0; i < output.length; i++) output[i] *= gain;
@@ -599,7 +704,7 @@ function importedRoom(room: RoomSettings, resource: MixImpulseResponse, distance
     decay: resource.buffer.duration - anchor,
     predelay: resource.predelayMode === 'external' ? clamp(resource.predelayMs ?? 0, 0, 250) / 1000 : 0,
     // The supplied IR already contains the space's spectral response.
-    lowpass: 22_000 * (1 - distance * 0.12), highpass: 35,
+    lowpass: 22_000 * (1 - distance * 0.12), highpass: 80,
   };
 }
 
@@ -709,6 +814,16 @@ function scheduleDucking(gain: AudioParam, level: number, points: DuckingPoint[]
   }
 }
 
+function attenuateToHeadroom(buffer: AudioBuffer): void {
+  const peak = measureAudio(buffer).peak;
+  if (peak <= HEADROOM) return;
+  const scale = (HEADROOM - 0.000001) / peak;
+  for (let channel = 0; channel < buffer.numberOfChannels; channel++) {
+    const data = buffer.getChannelData(channel);
+    for (let i = 0; i < data.length; i++) data[i] *= scale;
+  }
+}
+
 /** All changes to mix parameters process these same local stems, without API calls. */
 export async function renderMix(voice: AudioBuffer, ambience: AudioBuffer | null, options: MixOptions, resources: MixResources = {}): Promise<AudioBuffer> {
   validateBuffer(voice);
@@ -757,20 +872,24 @@ export async function renderMix(voice: AudioBuffer, ambience: AudioBuffer | null
   const voiceSource = context.createBufferSource();
   voiceSource.buffer = sanitizedBuffer(context, voice);
   const voiceGain = context.createGain();
-  voiceGain.gain.value = voiceCalibration(voiceAnalysis) * voiceVolume * (1 - distance * 0.27);
-  const highpass = context.createBiquadFilter();
-  highpass.type = 'highpass'; highpass.frequency.value = room.highpass; highpass.Q.value = 0.5;
-  const lowpass = context.createBiquadFilter();
-  lowpass.type = 'lowpass'; lowpass.frequency.value = room.lowpass; lowpass.Q.value = 0.5;
-  const dry = context.createGain();
-  dry.gain.value = Math.cos(room.wet * Math.PI / 2);
-  voiceSource.connect(voiceGain); voiceGain.connect(highpass); highpass.connect(lowpass); lowpass.connect(dry); dry.connect(sum);
+  const direct = directVoiceSettings(options);
+  voiceGain.gain.value = voiceCalibration(voiceAnalysis) * voiceVolume * direct.gain;
+  voiceSource.connect(voiceGain);
+  // Parallel room send: reflections must not turn down or filter direct speech.
+  // Close/natural retain the spectrum. Explicit distant adds a restrained shelf,
+  // independently of the room preset and any imported impulse response.
+  if (direct.highShelfDb) {
+    const shelf = context.createBiquadFilter(); shelf.type = 'highshelf'; shelf.frequency.value = 3_000; shelf.gain.value = direct.highShelfDb;
+    voiceGain.connect(shelf); shelf.connect(sum);
+  } else voiceGain.connect(sum);
   if (room.wet > 0.005) {
+    const highpass = context.createBiquadFilter(); highpass.type = 'highpass'; highpass.frequency.value = room.highpass; highpass.Q.value = Math.SQRT1_2;
+    const lowpass = context.createBiquadFilter(); lowpass.type = 'lowpass'; lowpass.frequency.value = room.lowpass; lowpass.Q.value = Math.SQRT1_2;
     const delay = context.createDelay(0.5); delay.delayTime.value = room.predelay;
     const convolver = context.createConvolver(); convolver.normalize = false;
     convolver.buffer = impulseResource ? prepareImportedImpulse(context, impulseResource) : makeImpulse(context, environment, room);
     const wet = context.createGain(); wet.gain.value = Math.sin(room.wet * Math.PI / 2);
-    lowpass.connect(delay); delay.connect(convolver); convolver.connect(wet); wet.connect(sum);
+    voiceGain.connect(highpass); highpass.connect(lowpass); lowpass.connect(delay); delay.connect(convolver); convolver.connect(wet); wet.connect(sum);
   }
   voiceSource.start(timing.voiceStart);
 
@@ -782,13 +901,14 @@ export async function renderMix(voice: AudioBuffer, ambience: AudioBuffer | null
     const width = ambientSourceKind === 'custom' ? 0.65 : environment.sound?.stereoWidth ?? 0.65;
     ambientSource.buffer = plan.loop ? makeLoopBuffer(context, ambience, environment.sound?.crossfadeSeconds ?? 0.8, width) : sanitizedBuffer(context, ambience);
     ambientSource.loop = plan.loop;
-    const ambientFilter = context.createBiquadFilter(); ambientFilter.type = 'highpass'; ambientFilter.frequency.value = 28;
+    const ambientFilter = context.createBiquadFilter(); ambientFilter.type = 'highpass'; ambientFilter.frequency.value = 28; ambientFilter.Q.value = Math.SQRT1_2;
     const ambientGain = context.createGain();
     ambientGain.gain.setValueAtTime(backgroundLevel, 0);
     if (duckingPoints.length) scheduleDucking(ambientGain.gain, backgroundLevel, duckingPoints, 0, duration, timing.voiceStart);
     const ambientFade = context.createGain();
-    ambientFade.gain.setValueAtTime(0, 0); ambientFade.gain.linearRampToValueAtTime(1, Math.min(0.08, plan.stop / 3));
-    ambientFade.gain.setValueAtTime(1, Math.max(plan.stop / 3, plan.stop - 0.08)); ambientFade.gain.linearRampToValueAtTime(0, plan.stop);
+    const bedFade = /shower|rain|river|beach/.test(environment.id) ? 0.16 : 0.08;
+    ambientFade.gain.setValueAtTime(0, 0); ambientFade.gain.linearRampToValueAtTime(1, Math.min(bedFade, plan.stop / 3));
+    ambientFade.gain.setValueAtTime(1, Math.max(plan.stop / 3, plan.stop - bedFade)); ambientFade.gain.linearRampToValueAtTime(0, plan.stop);
     ambientSource.connect(ambientFilter);
     if (plan.loop) ambientFilter.connect(ambientGain); else connectWidth(context, ambientFilter, ambientGain, width);
     ambientGain.connect(ambientFade); ambientFade.connect(sum);
@@ -805,7 +925,7 @@ export async function renderMix(voice: AudioBuffer, ambience: AudioBuffer | null
     const referenceLevel = eventReference * dbGain(clamp(event.relativeDb ?? -22, -48, -12)) * clamp(event.volume ?? 100, 0, 100) / 100 * clamp(options.ambientVolume, 0, 100) / eventDefaultVolume;
     const gain = clamp(referenceLevel / Math.max(0.000001, analysis.activeRms || analysis.rms), 0, 16);
     const source = context.createBufferSource(); source.buffer = sanitizedBuffer(context, event.buffer);
-    const highpass = context.createBiquadFilter(); highpass.type = 'highpass'; highpass.frequency.value = 28;
+    const highpass = context.createBiquadFilter(); highpass.type = 'highpass'; highpass.frequency.value = 28; highpass.Q.value = Math.SQRT1_2;
     const panner = context.createStereoPanner(); panner.pan.value = clamp(event.pan ?? 0, -0.8, 0.8);
     const level = context.createGain(); level.gain.setValueAtTime(gain, start);
     if (duckingPoints.length) scheduleDucking(level.gain, gain, duckingPoints, start, end, timing.voiceStart);
@@ -820,14 +940,7 @@ export async function renderMix(voice: AudioBuffer, ambience: AudioBuffer | null
   try { rendered = await context.startRendering(); }
   catch { throw new Error('O navegador ficou sem recursos para processar este áudio. Tente um trecho menor e feche outras abas.'); }
   // Attenuate only: peak ceiling at -1 dBFS, preserving the meaning of the sliders.
-  const peak = measureAudio(rendered).peak;
-  if (peak > HEADROOM) {
-    const scale = (HEADROOM - 0.000001) / peak;
-    for (let channel = 0; channel < rendered.numberOfChannels; channel++) {
-      const data = rendered.getChannelData(channel);
-      for (let i = 0; i < data.length; i++) data[i] *= scale;
-    }
-  }
+  attenuateToHeadroom(rendered);
   return rendered;
 }
 

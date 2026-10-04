@@ -1,7 +1,8 @@
+import { downloadStaticAmbience } from './static-ambience';
 import { getAccessToken } from '../auth/service';
 import { getStorageOwner } from '../auth/storage-owner';
 export interface ElevenVoice { id:string;name:string;description:string;previewUrl?:string;labels:Record<string,string> }
-export interface AudioStatus { configured:boolean;model:string;soundModel:string;defaultVoiceId?:string;voiceChange?:{model:string;configured:boolean;maxDurationSeconds:number;maxBytes:number;inputFormats:string[];paid:boolean} }
+export interface AudioStatus { configured:boolean;model:string;soundModel:string;defaultVoiceId?:string;speech?:{defaultQuality:string;losslessMaxChars:number;losslessMaxBytes:number;losslessFormat:string};voiceChange?:{model:string;configured:boolean;maxDurationSeconds:number;losslessMaxDurationSeconds?:number;maxBytes:number;inputFormats:string[];paid:boolean} }
 export interface VoicePage { voices:ElevenVoice[];hasMore?:boolean;nextPageToken?:string }
 export interface AudioProvenance { label:string;source:string;license:string;licenseUrl?:string }
 export interface AudioResourceMetadata { id:string;reviewed:boolean;source:'library'|'recording';revision:string;mimeType:string;durationSeconds:number;acoustic?:{directSound:'included'|'removed';directArrivalMs?:number;directWindowMs?:number;predelayMode:'embedded'|'external';predelayMs?:number;wet?:number} }
@@ -32,12 +33,12 @@ export async function getElevenVoices(nextPageToken?:string,signal?:AbortSignal,
   const response=await authenticatedFetch(`/api/audio/voices?${query}`,{signal});if(!response.ok)return responseError(response);return response.json();
 }
 /** Uploaded guide performance is sent only when the user requests conversion. */
-export async function createVoiceChange(body:{audio:Blob;voiceId:string;quality:'standard'|'high';removeBackgroundNoise:boolean},signal:AbortSignal):Promise<{blob:Blob;model:string}> {
+export async function createVoiceChange(body:{audio:Blob;voiceId:string;quality:'standard'|'high'|'lossless';removeBackgroundNoise:boolean},signal:AbortSignal):Promise<{blob:Blob;model:string}> {
   const form=new FormData();form.append('audio',body.audio,'guide.wav');form.append('voiceId',body.voiceId);form.append('quality',body.quality);form.append('removeBackgroundNoise',String(body.removeBackgroundNoise));
   const response=await authenticatedFetch('/api/audio/voice-change',{method:'POST',body:form,signal});if(!response.ok)return responseError(response);
   return {blob:await response.blob(),model:response.headers.get('X-Voice-Model')||'eleven_multilingual_sts_v2'};
 }
-export async function createSpeech(body:{text:string;voiceId:string;mood:string;quality:'standard'|'high'},signal:AbortSignal):Promise<Blob> {
+export async function createSpeech(body:{text:string;voiceId:string;mood:string;quality:'standard'|'high'|'lossless'},signal:AbortSignal):Promise<Blob> {
   const response=await authenticatedFetch('/api/audio/speech',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(body),signal});
   if(!response.ok)return responseError(response);return response.blob();
 }
@@ -55,7 +56,10 @@ async function ambienceResponse(response:Response):Promise<AmbienceAsset> {
 }
 /** Reads a prepared clip. This endpoint never starts a paid generation. */
 export async function getPreparedAmbience(environment:string,signal?:AbortSignal):Promise<AmbienceAsset> {
-  return ambienceResponse(await authenticatedFetch(`/api/audio/ambience/${encodeURIComponent(environment)}`,{signal}));
+  const response=await authenticatedFetch(`/api/audio/ambience/${encodeURIComponent(environment)}?metadata=1`,{signal});
+  if(!response.ok)return responseError(response);
+  if(response.headers.get('Content-Type')?.includes('application/json'))return downloadStaticAmbience(await response.json(),signal);
+  return ambienceResponse(response);
 }
 export async function createAmbience(environment:string,signal?:AbortSignal):Promise<AmbienceAsset> {
   const response=await authenticatedFetch('/api/audio/ambience',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({environment}),signal});

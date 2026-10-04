@@ -18,7 +18,8 @@ const environments = [
 const audio = Buffer.from('ID3\x04\x00\x00\x00\x00\x00\x00mock-mp3-bytes');
 const mp3 = () => new Response(audio, { headers: { 'content-type': 'audio/mpeg' } });
 const providerJson = (data, status = 200) => new Response(JSON.stringify(data), { status, headers: { 'content-type': 'application/json' } });
-const validSpeech = { text: 'Olá. Este roteiro deve permanecer exatamente como foi escrito.', voiceId: VOICE, mood: 'natural', speed: 1 };
+const validSpeech = { text: 'Olá. Este roteiro deve permanecer exatamente como foi escrito.', voiceId: VOICE, mood: 'natural', speed: 1, quality: 'standard' };
+const speechCapability = { defaultQuality: 'lossless', losslessMaxChars: 1200, losslessMaxBytes: 4194304, losslessFormat: 'pcm_24000', sampleRate: 24000, bitDepth: 16 };
 const forbiddenFetch = () => { throw new Error('A test attempted an unexpected provider call.'); };
 
 async function localServer(t, options = {}) {
@@ -65,9 +66,9 @@ test('status exposes configuration and supported models without credentials', as
   const response = await api.get('/api/audio/status');
   assert.equal(response.status, 200);
   assert.equal(response.headers.get('cache-control'), 'no-store');
-  assert.deepEqual(await response.json(), { configured: true, model: 'eleven_v3', soundModel: 'eleven_text_to_sound_v2', voiceChange: { model: 'eleven_multilingual_sts_v2', configured: true, maxDurationSeconds: 180, maxBytes: 31457280, inputFormats: ['wav'], paid: true }, defaultVoiceId: VOICE });
+  assert.deepEqual(await response.json(), { configured: true, model: 'eleven_v3', soundModel: 'eleven_text_to_sound_v2', speech: speechCapability, voiceChange: { model: 'eleven_multilingual_sts_v2', configured: true, maxDurationSeconds: 180, maxBytes: 31457280, losslessMaxDurationSeconds: 80, inputFormats: ['wav'], paid: true }, defaultVoiceId: VOICE });
   const absent = await localServer(t, { env: {} });
-  assert.deepEqual(await (await absent.get('/api/audio/status')).json(), { configured: false, model: 'eleven_v3', soundModel: 'eleven_text_to_sound_v2', voiceChange: { model: 'eleven_multilingual_sts_v2', configured: false, maxDurationSeconds: 180, maxBytes: 31457280, inputFormats: ['wav'], paid: true } });
+  assert.deepEqual(await (await absent.get('/api/audio/status')).json(), { configured: false, model: 'eleven_v3', soundModel: 'eleven_text_to_sound_v2', speech: speechCapability, voiceChange: { model: 'eleven_multilingual_sts_v2', configured: false, maxDurationSeconds: 180, maxBytes: 31457280, losslessMaxDurationSeconds: 80, inputFormats: ['wav'], paid: true } });
   const invalidDefault = await localServer(t, { env: { ...env, ELEVENLABS_DEFAULT_VOICE_ID: KEY } });
   assert.ok(!(await (await invalidDefault.get('/api/audio/status')).text()).includes(KEY));
 });
@@ -96,7 +97,7 @@ test('input bounds and strict JSON validation are checked before provider calls'
     [{ voiceId: '../invalid' }, 'invalid_voice'], [{ voiceId: null }, 'invalid_voice'],
     [{ mood: ['natural'] }, 'invalid_mood'], [{ mood: null }, 'invalid_mood'], [{ mood: 'unknown' }, 'invalid_mood'],
     [{ speed: 0.69 }, 'speed_not_supported'], [{ speed: 1.21 }, 'speed_not_supported'], [{ speed: '1' }, 'invalid_speed'], [{ speed: null }, 'invalid_speed'],
-    [{ quality: 'lossless' }, 'invalid_quality'], [{ use_speaker_boost: true }, 'invalid_input'],
+    [{ quality: 'unknown' }, 'invalid_quality'], [{ use_speaker_boost: true }, 'invalid_input'],
   ]) await errorCode(await api.post('/api/audio/speech', { ...validSpeech, ...changes }), 400, code);
   await errorCode(await api.post('/api/audio/ambience', { environment: 'unlisted' }), 400, 'invalid_environment');
   await errorCode(await api.post('/api/audio/ambience', { environment: 'rain', prompt: 'user prompt' }), 400, 'invalid_input');
@@ -131,7 +132,7 @@ test('v3 speech uses verified payload settings, preserves raw script and selects
     assert.equal(call.options.method, 'POST');
     assert.equal(call.options.headers['xi-api-key'], KEY);
     assert.equal(call.options.redirect, 'error');
-    assert.deepEqual(JSON.parse(call.options.body), { text, model_id: 'eleven_v3', language_code: 'pt', voice_settings: { stability } });
+    assert.deepEqual(JSON.parse(call.options.body), { text, model_id: 'eleven_v3', language_code: 'pt', apply_text_normalization: 'auto', voice_settings: { stability } });
   }
   await api.post('/api/audio/speech', validSpeech);
   assert.ok(calls.at(-1).url.endsWith('output_format=mp3_44100_128'));

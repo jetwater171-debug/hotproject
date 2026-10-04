@@ -6,7 +6,7 @@ Estúdio criativo com React, TypeScript e Vite, API Node.js local ou na Vercel e
 
 A API de produção usa uma única função, sessão Supabase verificada e cotas atômicas no banco antes de chamadas pagas. Aplique [a migração](supabase/migrations/202610010001_audio_access.sql) e configure as variáveis privadas somente no servidor. Veja [o guia de produção](docs/production-deploy.md) para os domínios permitidos, configuração Vercel, limites de upload e verificação do deploy.
 
-As cotas iniciais são 10 operações pagas por pessoa/dia e 50 no projeto/dia, com orçamento de processamento e duas gerações simultâneas. São limites operacionais; não representam créditos vendidos ou pagamentos. Guia em produção usa WAV PCM16 mono de 16 kHz, até 120 segundos/4 MiB. O cache serverless é efêmero e contém somente ambientes do catálogo público; vozes, roteiros e guias privados não são persistidos pela API.
+As cotas iniciais são 10 operações pagas por pessoa/dia e 50 no projeto/dia, com orçamento de processamento e duas gerações simultâneas. São limites operacionais; não representam créditos vendidos ou pagamentos. Guia em produção usa WAV PCM16 mono de 16 kHz, até 120 segundos/4 MiB; a conversão sem compressão aceita guia de até 80 segundos. O cache serverless é efêmero e contém somente ambientes do catálogo público; vozes, roteiros e guias privados não são persistidos pela API.
 
 ## Rodar localmente
 
@@ -50,9 +50,10 @@ O preview fica em [http://127.0.0.1:4173](http://127.0.0.1:4173). `npm run dev:w
 ## O que já funciona
 
 - Dashboard, navegação animada, busca global, ajuda e layout responsivo.
-- Tela de acesso/cadastro demonstrativa em `/#/welcome`, com validação e entrada como visitante; acessível pelo menu do perfil ou navegação mobile.
+- Acesso/cadastro com email e senha pelo Supabase; o estúdio exige uma sessão de conta válida e não oferece entrada como visitante.
 - Upload de JPG, PNG e WebP; filtros locais com intensidade; recorte central por formato; comparação e exportação em JPG.
 - AudioStudio com roteiros, vozes da conta ElevenLabs, amostras, paginação, interpretação natural/consistente/expressiva, direções de fala inseridas no texto e seleção de qualidade.
+- Botão “Voz do seu Telegram” quando o ID `vcYWBf5QTtDLdbfB20xT` está disponível na lista da conta; seleciona essa voz com estabilidade **Natural**. O roteiro aprovado é enviado inteiro, sem limpeza, acréscimos ou tags ocultas.
 - Geração de voz com **Eleven v3**, conversão de uma interpretação gravada com **Voice Changer Multilingual v2** e ambientes com **Sound Effects v2**, por uma API local que guarda a chave no servidor.
 - Catálogo compartilhado de ambientes com ícones SVG próprios, assinatura sonora e acústica específica: cenários com cama sonora e cinco silenciosos, representados pelo tratamento da voz. A lista é extensível, sem limite fixo nos endpoints.
 - Importação de áudio de até 30 MB e 3 minutos, sujeita aos formatos que o navegador consegue decodificar.
@@ -67,14 +68,15 @@ O preview fica em [http://127.0.0.1:4173](http://127.0.0.1:4173). `npm run dev:w
 
 ## Limites desta versão
 
-- A integração de áudio está implementada, mas **a geração real ainda não foi testada nesta etapa** e precisa de uma chave configurada. Testes com mocks verificam o contrato e os fluxos locais; não comprovam qualidade ou cobrança do provedor.
+- A geração depende de uma chave privada configurada, sessão válida e saldo no provedor. Testes com mocks verificam contratos e fluxos; não comprovam qualidade sonora, permissões ou cobrança de uma conta real.
 - As gerações e a conversão de voz usam os créditos da conta ElevenLabs. A API não repete automaticamente solicitações. Os fundos gerados usam loops de 24 ou 30 segundos, com cache por versão/modelo/prompt/parâmetros e deduplicação. Os cinco cenários silenciosos não geram efeito pago. Um som novo pode consumir créditos; ajustar o mix ou reutilizar um fundo preparado não gera outra voz nem outro efeito. Gravações locais aprovadas têm prioridade sobre gravações incluídas e sobre o cache de IA.
-- A fonte da ElevenLabs é MP3 a 44,1 kHz: 128 kbps no padrão e 192 kbps na qualidade alta, que exige plano **Creator ou superior**. Exportar o mix em WAV de 48 kHz não recupera informação já perdida pela compressão do MP3.
+- **Sem compressão** é o padrão da interface: a ElevenLabs devolve `pcm_24000` mono de 16 bits; o backend acrescenta somente o cabeçalho WAV e preserva cada amostra recebida. TTS aceita até **1.200 caracteres**, e Voice Changer, guia de até **80 segundos** nessa qualidade. O WAV da voz tem teto de **4 MiB**, também no modo local. O modo **Arquivo compacto** usa MP3 de 128 kbps a 44,1 kHz e permite roteiros de até 3.000 caracteres na interface. `high`/MP3 de 192 kbps permanece compatível na API, exige **Creator ou superior** e não é oferecido na interface configurada para Starter. PCM de 24 kHz é compatível com Starter; não solicitamos PCM de 44,1 kHz, que exige Pro ou superior. [Formatos e planos oficiais](https://help.elevenlabs.io/hc/en-us/articles/15754340124305-What-audio-formats-do-you-support).
+- O limite de caracteres não garante duração exata. O backend interrompe a leitura se a saída sem compressão ultrapassar 4 MiB e retorna `lossless_audio_too_long`, sem cortar a fala ou repetir a geração em MP3. Essa tentativa já pode consumir saldo do provedor. Para tentar novamente, o usuário escolhe explicitamente um trecho menor ou Arquivo compacto. Exportar um MP3 em WAV de 48 kHz não recupera informação perdida pela compressão.
 - A naturalidade depende da voz, do roteiro, da interpretação, da acústica e do resultado do provedor. Os prompts por cenário são pontos de partida. O cache de IA e as gravações incluídas contêm candidatos ainda não revisados; é necessário ouvir e aprovar/substituir os fundos. O status mostra quais cenários têm arquivos e quais ainda precisam de preparação. Sem fundo preparado e sem conexão, o estúdio preserva a voz e informa o que falta; não usa uma imitação sintética no mix final.
-- Voice Changer usa `eleven_multilingual_sts_v2`, separado do Eleven v3. O guia aceita WAV PCM16 até 180 segundos e 30 MiB na API; a interface pode limitar a duração para caber nesse teto. O servidor não guarda o guia em cache e não coleta uma gravação automaticamente. A conversão exige uma ação explícita do usuário.
-- Eleven v3 usa estabilidade e direções no roteiro. O controle de velocidade numérico foi removido porque a documentação específica do v3 não o suporta. Tags como `[whispers]` e `[slowly]` orientam a interpretação, com resultado dependente da voz; não garantem tempos exatos.
+- Voice Changer usa `eleven_multilingual_sts_v2`, separado do Eleven v3. A interface aceita guia de até 120 segundos/30 MB e prepara WAV PCM16 mono de 16 kHz antes do envio. A API de produção limita o upload a 120 segundos/4 MiB; o backend local mantém compatibilidade com WAV de até 180 segundos/30 MiB. Para `quality: lossless`, ambos recusam guia acima de 80 segundos antes de chamar o provedor. O servidor não guarda o guia em cache e não coleta uma gravação automaticamente. A conversão exige uma ação explícita do usuário.
+- Eleven v3 recebe somente `stability` em `voice_settings`: Natural `0.5`, Consistente (`soft`) `1` e Expressiva `0`. Não enviamos velocidade, similaridade, speaker boost ou o preset de estilo do Telegram como ajustes de naturalidade do v3. Direções inseridas pelo usuário permanecem visíveis no roteiro; o resultado depende da voz e não garante pausas com duração exata. O payload usa `language_code: pt`; prefira uma voz brasileira para o sotaque desejado. A normalização do provedor fica em `auto`, sem reescrita local do texto.
 - O teto de saída é **−1 dBFS de pico de amostra**. A calibração por RMS não é uma medição LUFS e não comprova true peak ou conformidade EBU R128. Os presets acústicos são aproximações, não medições de salas reais.
-- Acesso/cadastro, planos e saldo são demonstrativos. Autenticação real, cobrança, ledger de créditos e geração/edição de imagens com IA ainda serão implementados. O editor de imagens aplica filtros e recorte locais; não executa o prompt nem usa Seedream.
+- A autenticação usa Supabase. Planos e saldo da interface são demonstrativos; cobrança, ledger de créditos e geração/edição de imagens com IA ainda serão implementados. O editor de imagens aplica filtros e recorte locais; não executa o prompt nem usa Seedream.
 - Metadados, preferências e referências ficam no localStorage; arquivos de áudio e faixas separadas ficam no IndexedDB deste navegador. Não há sincronização em nuvem. Limpar os dados do navegador remove os projetos locais; quotas podem impedir salvamentos grandes. O JSON de exportação não substitui o backup dos arquivos WAV.
 - Fotografias de exemplo são referências do Unsplash, não resultados de IA nem identidades das pessoas fictícias da interface. Imagens e fontes remotas precisam de conexão.
 
@@ -84,17 +86,19 @@ O shell está em `src/App.tsx`; páginas e estúdios em `src/features/`. `src/au
 
 | Endpoint | Função |
 | --- | --- |
-| `GET /api/audio/status` | Informa se a chave está configurada e quais modelos são usados; não devolve a chave. |
+| `GET /api/audio/status` | Informa modelos, disponibilidade e limites de TTS/guia lossless; não devolve a chave. |
 | `GET /api/audio/voices?nextPageToken=…` | Lista vozes com paginação; aceita também `search` e `language`. |
-| `POST /api/audio/speech` | Recebe `text`, `voiceId`, `mood` e `quality`; devolve MP3 com Eleven v3. |
-| `POST /api/audio/voice-change` | Multipart com `audio` WAV PCM16, `voiceId`, `quality` e `removeBackgroundNoise`; devolve MP3 com Multilingual STS v2. |
+| `POST /api/audio/speech` | Recebe `text`, `voiceId`, `mood` e `quality`; Eleven v3 devolve WAV PCM16 de 24 kHz para `lossless` (padrão quando omitido) ou MP3 para `standard`/`high`. |
+| `POST /api/audio/voice-change` | Multipart com `audio` WAV PCM16, `voiceId`, `quality` e `removeBackgroundNoise`; Multilingual STS v2 devolve WAV PCM16 de 24 kHz ou MP3. Omitir `quality` mantém `standard` por compatibilidade. |
 | `GET /api/audio/environments` | Lista ambientes silenciosos, aprovados, gravações incluídas, candidatos gerados ou ausentes; informa recursos de cena disponíveis. |
 | `GET /api/audio/ambience/:id` | Lê arquivo aprovado, gravação incluída ou candidato cacheado. Nunca inicia geração paga. |
 | `POST /api/audio/ambience` | Reutiliza arquivo aprovado, gravação incluída ou cache; gera apenas o fundo solicitado quando ausente. Cenários silenciosos não chamam o provedor. |
 | `GET /api/audio/ir/:environment` | Lê uma resposta de sala revisada ou incluída com metadados explícitos. Sem arquivo retorna `AUDIO_RESOURCE_NOT_READY`. |
 | `GET /api/audio/events/:environment/:eventId` | Lê um evento local aprovado. Nunca gera arquivos nem cobra por prévia. |
 
-Solicitações POST exigem JSON, exceto `/voice-change`, que recebe `multipart/form-data`. O servidor valida Host/Origin local, limita chamadas simultâneas ao provedor a duas e usa timeout de dois minutos. Erros são devolvidos como `{ "error": { "code": "…", "message": "…" } }`, sem repassar mensagens brutas do provedor. O cache de ambientes fica em `.cache/audio/` e não contém chaves nem roteiros dos usuários.
+Solicitações POST exigem JSON, exceto `/voice-change`, que recebe `multipart/form-data`. Em produção, todos os endpoints de áudio, exceto o status público, exigem Bearer de uma sessão Supabase verificada. O servidor valida Host/Origin permitido, reserva a cota antes da chamada paga, limita chamadas simultâneas ao provedor a duas e usa timeout de dois minutos. Erros são devolvidos como `{ "error": { "code": "…", "message": "…" } }`, sem repassar mensagens brutas do provedor. Não há retry pago nem troca automática de formato. O cache de ambientes fica em `.cache/audio/` no backend local e em `/tmp` efêmero na Vercel; não contém chaves nem roteiros dos usuários.
+
+TTS e Voice Changer devolvem `Content-Type: audio/wav` para lossless ou `audio/mpeg` para MP3, com `X-Voice-Model`, `X-Speech-Format`, `X-Speech-Container` e `X-Speech-Sample-Rate`; WAV inclui `X-Speech-Bit-Depth: 16`. `GET /api/audio/status` informa `speech.losslessMaxChars`, `speech.losslessMaxBytes` e `voiceChange.losslessMaxDurationSeconds`. O backend rejeita limites de texto/guia antes da reserva de cota e mede os bytes reais da resposta durante a leitura. O roteiro não é truncado para caber na qualidade selecionada.
 
 Contratos oficiais: [texto para voz](https://elevenlabs.io/docs/api-reference/text-to-speech/convert), [Voice Changer](https://elevenlabs.io/docs/api-reference/speech-to-speech/convert), [efeitos sonoros](https://elevenlabs.io/docs/api-reference/text-to-sound-effects/convert) e [lista de vozes](https://elevenlabs.io/docs/api-reference/voices/search).
 

@@ -53,7 +53,7 @@ async function local(t, options = {}, factory = createAudioHandler) {
 async function error(response, status, code) {
   assert.equal(response.status, status); const raw = await response.text(); assert.ok(![KEY, SERVICE, TOKEN].some(secret => raw.includes(secret))); assert.equal(JSON.parse(raw).error.code, code);
 }
-const speech = { text: 'Texto privado usado apenas em memória.', voiceId: 'voice123' };
+const speech = { text: 'Texto privado usado apenas em memória.', voiceId: 'voice123', quality: 'standard' };
 
 test('production status is public, truthful and exposes runtime limits without credentials', async t => {
   const api = await local(t);
@@ -61,6 +61,7 @@ test('production status is public, truthful and exposes runtime limits without c
   const raw = await response.text(); assert.ok(![KEY, SERVICE, TOKEN].some(secret => raw.includes(secret)));
   const status = JSON.parse(raw); assert.equal(status.authRequired, true); assert.equal(status.authConfigured, true); assert.equal(status.usageConfigured, true); assert.equal(status.cachePersistence, 'ephemeral');
   assert.equal(status.voiceChange.maxBytes, 4194304); assert.equal(status.voiceChange.maxDurationSeconds, 120); assert.equal(status.voiceChange.inputSampleRate, 16000); assert.equal(status.voiceChange.inputChannels, 1);
+  assert.equal(status.voiceChange.losslessMaxDurationSeconds, 80); assert.equal(status.speech.losslessMaxChars, 1200); assert.equal(status.speech.losslessMaxBytes, 4194304);
   assert.deepEqual(status.limits, { dailyGenerations: 10, dailyProcessingUnits: 15000 });
 });
 
@@ -94,6 +95,47 @@ test('paid generation reserves only verified user ID and metadata, then finishes
   assert.equal(reservation.p_user_id, USER); assert.equal(reservation.p_units, speech.text.length); assert.equal(reservation.p_daily_limit, 10); assert.equal(reservation.p_global_daily_limit, 50); assert.equal(reservation.p_concurrency, 2);
   assert.ok(!records[1].input.body.includes(speech.text)); assert.deepEqual(completion, { p_user_id: USER, p_request_id: reservation.p_request_id, p_outcome: 'succeeded' });
   await error(await api.post('/api/audio/speech', { ...speech, userId: 'attacker' }), 400, 'invalid_input');
+});
+
+test('authenticated lossless speech passes the same durable quota before returning a WAV', async t => {
+  const pcm = Buffer.alloc(4800); pcm.writeInt16LE(1234, 0); pcm.writeInt16LE(-1234, 2);
+  const records = [], api = await local(t, { fetchImpl: mockProvider(records, { output: () => new Response(pcm, { headers: { 'Content-Type': 'application/octet-stream' } }) }) }, createVercelHandler);
+  const response = await api.post('/api/audio?__audio_route=speech', { ...speech, quality: 'lossless' }, { Origin: `https://${HOST}` });
+  assert.equal(response.status, 200); assert.equal(response.headers.get('content-type'), 'audio/wav');
+  assert.equal(response.headers.get('x-speech-format'), 'pcm_24000'); assert.equal(response.headers.get('content-length'), null);
+  assert.ok(response.headers.get('access-control-expose-headers').includes('X-Speech-Format'));
+  const bytes = Buffer.from(await response.arrayBuffer()); assert.deepEqual(bytes.subarray(44), pcm);
+  assert.equal(JSON.parse(records[1].input.body).p_units, speech.text.length);
+  assert.equal(records[2].url, 'https://api.elevenlabs.io/v1/text-to-speech/voice123?output_format=pcm_24000');
+  assert.equal(JSON.parse(records[3].input.body).p_outcome, 'succeeded');
+  const rejectedRecords = [], rejected = await local(t, { fetchImpl: mockProvider(rejectedRecords, { reservation: { allowed: false, code: 'daily_limit' } }) });
+  await error(await rejected.post('/api/audio/speech', { ...speech, quality: 'lossless' }), 429, 'daily_limit');
+  assert.ok(rejectedRecords.every(record => !record.url.includes('api.elevenlabs.io')));
+});
+
+test('lossless preflight avoids paid calls and oversized output closes its durable lease without retry', async t => {
+  const records = [], preflight = await local(t, { fetchImpl: mockProvider(records) });
+  await error(await preflight.post('/api/audio/speech', { ...speech, text: 'x'.repeat(1201), quality: 'lossless' }), 400, 'lossless_text_too_long');
+  const longGuide = guide(wav(81)); longGuide.append('quality', 'lossless');
+  await error(await preflight.guide(longGuide), 400, 'lossless_guide_too_long');
+  assert.ok(records.every(record => record.url.endsWith('/auth/v1/user')));
+  let cancelled = 0, pulls = 0;
+  const oversizeRecords = [], oversize = await local(t, { fetchImpl: mockProvider(oversizeRecords, { output: () => new Response(new ReadableStream({ pull(controller) { pulls++; controller.enqueue(Buffer.alloc(1024 * 1024)); }, cancel() { cancelled++; } }, { highWaterMark: 0 }), { headers: { 'Content-Type': 'audio/pcm' } }) }) });
+  await error(await oversize.post('/api/audio/speech', { ...speech, quality: 'lossless' }), 502, 'lossless_audio_too_long');
+  assert.equal(cancelled, 1); assert.equal(pulls, 4);
+  assert.equal(oversizeRecords.filter(record => record.url.includes('api.elevenlabs.io')).length, 1);
+  assert.equal(JSON.parse(oversizeRecords.at(-1).input.body).p_outcome, 'failed');
+});
+
+test('lossless Voice Changer supports an 80-second guide while MP3 retains its 120-second production limit', async t => {
+  const pcm = Buffer.alloc(80 * 48000); pcm.writeInt16LE(1234, 0);
+  const records = [], api = await local(t, { fetchImpl: mockProvider(records, { output: () => new Response(pcm, { headers: { 'Content-Type': 'audio/pcm' } }) }) });
+  const request = guide(wav(80)); request.append('quality', 'lossless');
+  const response = await api.guide(request); assert.equal(response.status, 200); assert.equal(response.headers.get('content-type'), 'audio/wav');
+  assert.equal(response.headers.get('x-voice-model'), 'eleven_multilingual_sts_v2'); assert.equal(response.headers.get('x-guide-duration'), '80');
+  const bytes = Buffer.from(await response.arrayBuffer()); assert.ok(bytes.length <= 4194304); assert.deepEqual(bytes.subarray(44), pcm);
+  assert.equal(records.filter(record => record.url.includes('api.elevenlabs.io')).length, 1);
+  assert.ok(records[2].url.endsWith('output_format=pcm_24000'));
 });
 
 test('free voice listing and prepared/silent ambience require auth and consume no paid quota', async t => {
